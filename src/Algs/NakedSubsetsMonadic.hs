@@ -61,6 +61,17 @@ applyNakedSubsetsN size = do
   let updated = findNakedSubsetsNCells size grid
   fillGrid updated
 
+-- | This function returns a list of found subsets acroos all the groups
+findNakedSubsetsN :: SubsetSize -> Game [(GroupIndex, [Subset])]
+findNakedSubsetsN size = do
+  board <- getBoard
+  let groupIndexes = boardGroupIndexes board
+
+  return concatMap groupResult groupIndexes
+  where
+    -- groupResult :: GroupIndex -> (GroupIndex, [Subset])
+    groupResult = findNakedSubsetsNGroupN size
+
 findNakedSubsetsNGroupN :: SubsetSize -> GroupIndex -> Game [Subset]
 findNakedSubsetsNGroupN size groupIndex = do
   board <- getBoard

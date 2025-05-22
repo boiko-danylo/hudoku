@@ -97,7 +97,7 @@ handleSetTestGroup = testGroup "handleSetTestGroup" [handleSetTestA]
 handleSetTestA = testCase "handleSetTestA" $ assertEqual "" expected eval
   where
     expected = [Position [3], Position [4]]
-    eval = handleSet data' [2, 3]
+    eval = handleSet data' $ fromList [2, 3]
     data' =
       [ (Position [1], 1, CellValue 1),
         (Position [2], 2, PossibleValues $ fromList [4, 5]),

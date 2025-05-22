@@ -35,23 +35,23 @@ handleGroup n group = sortBy (\a b -> compare (cellInfoIndex a) (cellInfoIndex b
     avFreqN :: Int -> [(Int, Int)] -> [Int] -- Filter frequency map
     avFreqN n list = map fst $ filter (\p -> snd p == n) list
 
-    ss :: [[Int]] -- PV combinations with length N
-    ss = map sort $ filter ((n ==) . length) $ subsequences $ avFreqN n avFreq
+    ss :: [CellPossibleValues] -- PV combinations with length N
+    ss = filter ((n ==) . IntSet.size) $ map IntSet.fromList $ subsequences $ avFreqN n avFreq
 
     -- Found hidden sets
-    sets :: [([Int], [Position])]
+    sets :: [(CellPossibleValues, [Position])]
     sets = mapMaybe sets' ss
       where
-        sets' :: [Int] -> Maybe ([Int], [Position])
+        sets' :: CellPossibleValues -> Maybe (CellPossibleValues, [Position])
         sets' pvs = if not $ null hs then Just (pvs, hs) else Nothing
           where
             hs = handleSet group pvs
 
     -- Transform sets
-    result :: [([Int], [Position])] -> [CellInfo]
+    result :: [(CellPossibleValues, [Position])] -> [CellInfo]
     result = foldl foldf []
 
-    foldf :: [CellInfo] -> ([Int], [Position]) -> [CellInfo]
+    foldf :: [CellInfo] -> (CellPossibleValues, [Position]) -> [CellInfo]
     foldf c (pvs, pl) = new ++ fc -- Build new + save curry
       where
         ci = getCellInfo group c
@@ -59,7 +59,7 @@ handleGroup n group = sortBy (\a b -> compare (cellInfoIndex a) (cellInfoIndex b
           ( -- Build new cellInfo
             pos,
             cellInfoIndex $ ci pos,
-            PossibleValues $ IntSet.fromList pvs
+            PossibleValues pvs
           )
         new = map updatePos pl -- updated cells
         fc = filter (\(_, i, _) -> i `notElem` map cellInfoIndex new) c -- old cells
@@ -67,13 +67,13 @@ handleGroup n group = sortBy (\a b -> compare (cellInfoIndex a) (cellInfoIndex b
     getCellInfo source res pos = fromMaybe (fromJust $ getCellInfo' pos source) (getCellInfo' pos res)
     getCellInfo' i = find (\ci -> cellInfoPosition ci == i)
 
-handleSet :: [CellInfo] -> [Int] -> [Position]
+handleSet :: [CellInfo] -> CellPossibleValues -> [Position]
 handleSet group pvs = if isHiddenSet pv then res pv else []
   where
-    n = length pvs
+    n = IntSet.size pvs
 
     pv :: [(Int, [Position])]
-    pv = map pv' pvs
+    pv = map pv' $ IntSet.toList pvs
     pv' x = (x, pv'' x)
     pv'' x = map cellInfoPosition $ filter (\ci -> isPossibleValuesHasValue (cellInfoCell ci) x) $ filter (isPossibleValues . cellInfoCell) group
 

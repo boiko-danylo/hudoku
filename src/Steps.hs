@@ -9,6 +9,7 @@ type Description = String
 type Updates = [CellInfo]
 
 data Step = Step Algorithm Description Updates
+  deriving (Eq, Show)
 
 type Steps = [Step]
 

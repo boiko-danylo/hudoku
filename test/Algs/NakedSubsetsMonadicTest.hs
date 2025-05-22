@@ -1,15 +1,17 @@
 module Algs.NakedSubsetsMonadicTest (tests) where
 
+import Algs.Algs (Algorithm (NackedSet))
 import Algs.NakedSubsetsMonadic
-import Board (boardGridLength)
+import Board (Position (Position), boardGridLength)
 import ClassicBoard (classicBoard, classicGame)
 import Data.IntSet (fromList)
 import Game (evalGame, initGame)
 import Grid
+import Steps (Step (Step))
 import Test.Tasty
 import Test.Tasty.HUnit
 
-tests = testGroup "NakedSubsets (Monadic) algorithm tests" [findNakedSubsetsNCellsTestGroup, findNakedSubsetsNGroupNTestGroup]
+tests = testGroup "NakedSubsets (Monadic) algorithm tests" [findNakedSubsetsNCellsTestGroup, findNakedSubsetsNGroupNTestGroup, findNakedSubsetsNStepsTestGroup]
 
 findNakedSubsetsNCellsTestGroup = testGroup "findNakedSubsetsNCells" [cellsSize2TestGroup, cellsSize3TestGroup, cellsSize4TestGroup]
 
@@ -181,3 +183,28 @@ subsetsSize4BasicTestCase = testCase "subsetSize4BasicTestCase" $ assertEqual ""
         PossibleValues $ fromList [2, 8, 9]
       ]
     eval = findNakedSubsetsNGroupNTestEval 4 input
+
+findNakedSubsetsNStepsTestGroup = testGroup "findNakedSubsetsNSteps tests" [findNakedSubsetsN2StepsTestGroup]
+
+findNakedSubsetsN2StepsTestGroup = testGroup "findNakedSubsetsNSteps N=2 tests" [findNakedSubsetsN2StepsCase1]
+
+findNakedSubsetsN2StepsCase1 = testCase "findNakedSubsetsN2StepsCase1" $ assertEqual "" expected eval
+  where
+    step = Step NackedSet "text" [(Position [0, 2], 2, PossibleValues $ Data.IntSet.fromList [4, 8])]
+    expected = [step]
+
+    input =
+      [ CellValue 7,
+        CellValue 6,
+        PossibleValues $ fromList [2, 3, 4, 8],
+        PossibleValues $ fromList [4],
+        CellValue 1,
+        PossibleValues $ fromList [4],
+        PossibleValues $ fromList [2, 3],
+        CellValue 5,
+        PossibleValues $ fromList [2, 3]
+      ]
+
+    action = findNakedSubsetsNSteps 2
+    board = classicBoard
+    eval = evalGame board input action

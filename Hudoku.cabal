@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b5d0dce940fe5076f8a3f0835004881c577c57f71357a0aa1ea45080a67ab46
+-- hash: 02b03322d8001501bcd18020c888155ca69e62470800edd63a82bf67d0f10766
 
 name:           Hudoku
 version:        0.1.0.0
@@ -80,7 +80,7 @@ test-suite test
       GameTest
       GridTest
       Missions.Classic.Hard
-      Steps
+      StepsTest
       TestBoard1d
       Paths_Hudoku
   hs-source-dirs:

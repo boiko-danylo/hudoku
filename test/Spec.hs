@@ -2,7 +2,6 @@
 -- import qualified Algs.HiddenSubsetsTest
 
 import Algs.HiddenSets
-import qualified Algs.NakedSubsetsMonadicTest
 import Board
 import qualified BoardTest
 import ClassicBoard
@@ -26,7 +25,6 @@ tests =
       GameTest.tests,
       -- Algs.NakedSubsetsTest.tests,
       -- Algs.HiddenSubsetsTest.tests
-      Algs.NakedSubsetsMonadicTest.tests,
       TechniqueTest.tests,
       Techniques.NakedSubsetsTest.tests
     ]

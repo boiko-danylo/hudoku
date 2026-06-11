@@ -1,6 +1,7 @@
 module Main where
 
 import ClassicBoard
+import Data.Maybe (fromJust)
 import Grid
 import GridShowers
 import Solver
@@ -8,7 +9,7 @@ import System.Exit
 
 harderGrid :: Grid
 harderGrid =
-  readGridWith classicInit $
+  fromJust . readClassicGrid $
     concat
       [ "5...1.7..",
         "8........",

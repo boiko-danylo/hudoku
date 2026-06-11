@@ -6,8 +6,8 @@ import Data.List
 
 classicBoard = Board 2 9 classicGroups classicPositions
 
-classicInit:: Grid -> Grid
-classicInit = initPossibleValues' classicBoard
+readClassicGrid :: String -> Maybe Grid
+readClassicGrid = readGridFor classicBoard
 
 classicGroups :: [Group]
 classicGroups = row_groups ++ col_groups ++ square_groups

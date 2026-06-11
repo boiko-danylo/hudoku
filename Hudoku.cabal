@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f7972785d4755bbdc14ab399abeb606da5fd694082daf8e34adae4eb5eb026ed
+-- hash: 099a191a09d20815985a62dee6ac87e3243ad76715318f704dc9328a1f15e3a4
 
 name:           Hudoku
 version:        0.1.0.0
@@ -29,7 +29,6 @@ library
       Board
       Checker
       ClassicBoard
-      Game
       Grid
       GridShowers
       Solver
@@ -77,8 +76,6 @@ test-suite test
   main-is: Spec.hs
   other-modules:
       BoardTest
-      GameTest
-      GridTest
       Missions.Classic.Hard
       SolverTest
       Techniques.HiddenSubsetsTest

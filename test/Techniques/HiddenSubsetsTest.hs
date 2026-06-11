@@ -1,7 +1,7 @@
 module Techniques.HiddenSubsetsTest (tests) where
 
-import Board (Board (..), Position (..))
-import ClassicBoard (classicBoard, classicInit)
+import ClassicBoard (classicBoard, readClassicGrid)
+import Data.Maybe (fromJust)
 import qualified Data.IntSet as IntSet
 import Grid
 import Solver (runSolver)
@@ -11,7 +11,7 @@ import Techniques.NakedSingles (nakedSingles)
 import Techniques.PeerElimination (peerElimination)
 import Test.Tasty
 import Test.Tasty.HUnit
-import TestBoard1d (testBoard1d)
+import TestBoard1d (lineBoard, testBoard1d)
 
 pv :: [Value] -> Cell
 pv = PossibleValues . IntSet.fromList
@@ -23,8 +23,7 @@ applyAll :: Grid -> [Finding] -> Grid
 applyAll = foldl (flip applyFinding)
 
 -- A single-group line of nine cells, for exact scenario ports
-line9 :: Board
-line9 = Board 1 9 [map (\x -> Position [x]) [1 .. 9]] (map (\x -> (x, Position [x])) [1 .. 9])
+line9 = lineBoard 9
 
 tests :: TestTree
 tests =
@@ -54,7 +53,7 @@ tests =
                   [0, 1, 2]
               ],
       testCase "Hidden pair on a real classic grid (ported)" $ do
-        let start = readGridWith classicInit ".49132....81479...327685914.96.518...75.28....38.46..5853267...712894563964513..."
+        let start = fromJust $ readClassicGrid ".49132....81479...327685914.96.518...75.28....38.46..5853267...712894563964513..."
             grid = applyAll start (peerElimination classicBoard start)
             found = hiddenSubsets 2 classicBoard grid
         any (\f -> findingInvolved f == [44, 62]) found @? "expected the {1,9} pair at cells 44 and 62"

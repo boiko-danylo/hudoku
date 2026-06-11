@@ -1,5 +1,6 @@
 module Board where
 
+import Data.Char (digitToInt, isDigit)
 import Data.IntSet (IntSet)
 import qualified Data.IntSet as IntSet
 import Data.Ix (Ix (range))
@@ -32,6 +33,19 @@ instance Show Board where
 
 boardValues :: Board -> Candidates
 boardValues (Board _ n _ _) = IntSet.fromList $ range (1, n)
+
+-- | Parse a grid for this board: '.' and '0' are open cells carrying the
+--   board's full domain as candidates (ADR-0004: construction needs the
+--   board, because only the board knows what "all candidates" means).
+readGridFor :: Board -> String -> Maybe Grid
+readGridFor board = traverse readCell
+  where
+    open = PossibleValues (boardValues board)
+    readCell '.' = Just open
+    readCell '0' = Just open
+    readCell c
+      | isDigit c && c > '0' = Just (CellValue (digitToInt c))
+      | otherwise = Nothing
 
 showBoardGroups :: Board -> String
 showBoardGroups (Board _ _ g _) = showGroups g
@@ -122,9 +136,3 @@ getCellsFromGroup board grid group = map posToCell' boardGroup
   where
     boardGroup = boardGroups board !! group
     posToCell' = posToCell board grid
-
--- TODO: Deprecate
-initPossibleValues' board = map initCell
-  where
-    initCell EmptyCellVallue = PossibleValues $ boardValues board
-    initCell a = a

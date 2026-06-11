@@ -1,6 +1,6 @@
 module Techniques.NakedSubsetsTest (tests) where
 
-import Board (CellInfo, GridIndex, Position (..), boardGridLength)
+import Board (CellInfo, GridIndex, Position (..), boardGridLength, boardValues)
 import ClassicBoard (classicBoard)
 import qualified Data.IntSet as IntSet
 import Grid
@@ -8,6 +8,7 @@ import Technique
 import Techniques.NakedSubsets
 import Test.Tasty
 import Test.Tasty.HUnit
+import TestBoard1d (lineBoard)
 
 pv :: [Value] -> Cell
 pv = PossibleValues . IntSet.fromList
@@ -19,11 +20,17 @@ cands = IntSet.fromList
 ci :: GridIndex -> Cell -> CellInfo
 ci i c = (Position [i], i, c)
 
--- Pad a row prefix out to a full classic grid
+-- Pad a row prefix out to a full classic grid with open cells
 classicGridOf :: [Cell] -> Grid
-classicGridOf cells = take len (cells ++ replicate len EmptyCellVallue)
+classicGridOf cells = take len (cells ++ replicate len openCell)
   where
     len = boardGridLength classicBoard
+
+openCell :: Cell
+openCell = PossibleValues (boardValues classicBoard)
+
+-- A nine-cell single-group board: scenarios stated on one group stay exact
+line9 = lineBoard 9
 
 applyAll :: Grid -> [Finding] -> Grid
 applyAll = foldl (flip applyFinding)
@@ -77,14 +84,14 @@ nakedSubsetsTests =
   testGroup
     "nakedSubsets"
     [ testCase "Triple formed by strict subsets of its value-set" $
-        nakedSubsets 3 classicBoard tripleGrid
+        nakedSubsets 3 line9 tripleGrid
           @?= [ Finding
                   (NakedSubset 3)
                   [Eliminate 3 (cands [1]), Eliminate 4 (cands [2, 3])]
                   [0, 1, 2]
               ],
       testCase "Pair whose elimination changes nothing yields no findings" $
-        nakedSubsets 2 classicBoard noEffectGrid
+        nakedSubsets 2 line9 noEffectGrid
           @?= [],
       testCase "Same pair found independently in row and box" $ do
         let found = nakedSubsets 2 classicBoard twoGroupsGrid
@@ -95,14 +102,12 @@ nakedSubsetsTests =
     ]
   where
     tripleGrid =
-      classicGridOf
         [pv [1, 2], pv [2, 3], pv [1, 3], pv [1, 4, 5], pv [2, 3, 9], CellValue 6, CellValue 7, CellValue 8, pv [4, 5, 9]]
     noEffectGrid =
-      classicGridOf
         [pv [4, 7], pv [4, 7], CellValue 1, CellValue 2, CellValue 3, CellValue 5, CellValue 6, CellValue 8, CellValue 9]
     twoGroupsGrid =
       classicGridOf
-        ([pv [4, 7], pv [4, 7], pv [2, 4, 9]] ++ replicate 6 EmptyCellVallue ++ [pv [4, 7, 9]])
+        ([pv [4, 7], pv [4, 7], pv [2, 4, 9]] ++ replicate 6 openCell ++ [pv [4, 7, 9]])
 
 -- Ports of the Algs.NakedSubsetsMonadicTest scenarios (coverage preserved)
 
@@ -111,7 +116,7 @@ portedScenarioTests =
   testGroup
     "ported old scenarios"
     [ testCase "Size-2 row scenario produces the old result" $ do
-        let found = nakedSubsets 2 classicBoard size2Grid
+        let found = nakedSubsets 2 line9 size2Grid
         found
           @?= [ Finding
                   (NakedSubset 2)
@@ -120,37 +125,30 @@ portedScenarioTests =
               ]
         applyAll size2Grid found @?= size2Expected,
       testCase "Size-3 row scenario produces the old result" $ do
-        let found = nakedSubsets 3 classicBoard size3Grid
+        let found = nakedSubsets 3 line9 size3Grid
         length found @?= 1
         applyAll size3Grid found @?= size3Expected,
       testCase "Size-4 row scenario produces the old result" $ do
-        let found = nakedSubsets 4 classicBoard size4Grid
+        let found = nakedSubsets 4 line9 size4Grid
         length found @?= 1
         applyAll size4Grid found @?= size4Expected,
       testCase "Two pairs in one row compose on a shared cell" $ do
-        let found = nakedSubsets 2 classicBoard twoPairsGrid
+        let found = nakedSubsets 2 line9 twoPairsGrid
         length found @?= 2
         applyAll twoPairsGrid found !! 2 @?= pv [8]
     ]
   where
     size2Grid =
-      classicGridOf
         [CellValue 7, CellValue 6, pv [2, 3, 4, 8], CellValue 9, CellValue 1, pv [3, 4, 8], pv [2, 3], CellValue 5, pv [2, 3]]
     size2Expected =
-      classicGridOf
         [CellValue 7, CellValue 6, pv [4, 8], CellValue 9, CellValue 1, pv [4, 8], pv [2, 3], CellValue 5, pv [2, 3]]
     size3Grid =
-      classicGridOf
         [pv [7, 8, 9], CellValue 1, pv [7, 8], pv [3, 5, 9], CellValue 4, pv [5, 6, 8, 9], pv [7, 9], CellValue 2, pv [3, 5, 6, 7, 8, 9]]
     size3Expected =
-      classicGridOf
         [pv [7, 8, 9], CellValue 1, pv [7, 8], pv [3, 5], CellValue 4, pv [5, 6], pv [7, 9], CellValue 2, pv [3, 5, 6]]
     size4Grid =
-      classicGridOf
         [CellValue 1, pv [4, 5, 6], pv [4, 9], pv [3, 5, 6], pv [3, 5, 6, 7], pv [3, 5, 7], pv [2, 4, 8, 9], pv [2, 4], pv [2, 8, 9]]
     size4Expected =
-      classicGridOf
         [CellValue 1, pv [5, 6], pv [4, 9], pv [3, 5, 6], pv [3, 5, 6, 7], pv [3, 5, 7], pv [2, 4, 8, 9], pv [2, 4], pv [2, 8, 9]]
     twoPairsGrid =
-      classicGridOf
         [CellValue 7, CellValue 6, pv [2, 3, 4, 8], pv [4, 5], CellValue 1, pv [4, 5], pv [2, 3], CellValue 5, pv [2, 3]]

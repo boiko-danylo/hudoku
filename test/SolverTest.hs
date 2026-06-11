@@ -1,6 +1,7 @@
 module SolverTest (tests) where
 
-import ClassicBoard (classicBoard, classicInit)
+import ClassicBoard (classicBoard, readClassicGrid)
+import Data.Maybe (fromJust)
 import qualified Data.IntSet as IntSet
 import Grid
 import Solver
@@ -9,6 +10,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Techniques.NakedSingles (nakedSingles)
 import Techniques.NakedSubsets (nakedSubsets)
+import TestBoard1d (lineBoard)
 
 pv :: [Value] -> Cell
 pv = PossibleValues . IntSet.fromList
@@ -22,7 +24,7 @@ bomb _ _ = error "bomb technique was evaluated"
 
 solvedGrid :: Grid
 solvedGrid =
-  readGridWith id $
+  fromJust . readClassicGrid $
     concat
       [ "123456789",
         "456789123",
@@ -70,7 +72,7 @@ solveTests =
         runSolver [] classicBoard solvedGrid
           @?= (Solved, solvedGrid, []),
       testCase "Unsolvable-by-these-techniques grid reports Stuck" $ do
-        let (outcome, grid', journal) = runSolver [nakedSubsets 2] classicBoard size2Grid
+        let (outcome, grid', journal) = runSolver [nakedSubsets 2] (lineBoard 9) size2Grid
         outcome @?= Stuck
         grid' @?= size2Expected
         journal
@@ -91,9 +93,6 @@ solveTests =
     ]
   where
     size2Grid =
-      classicGridOf
-        [CellValue 7, CellValue 6, pv [2, 3, 4, 8], CellValue 9, CellValue 1, pv [3, 4, 8], pv [2, 3], CellValue 5, pv [2, 3]]
+      [CellValue 7, CellValue 6, pv [2, 3, 4, 8], CellValue 9, CellValue 1, pv [3, 4, 8], pv [2, 3], CellValue 5, pv [2, 3]]
     size2Expected =
-      classicGridOf
-        [CellValue 7, CellValue 6, pv [4, 8], CellValue 9, CellValue 1, pv [4, 8], pv [2, 3], CellValue 5, pv [2, 3]]
-    classicGridOf cells = take 81 (cells ++ replicate 81 EmptyCellVallue)
+      [CellValue 7, CellValue 6, pv [4, 8], CellValue 9, CellValue 1, pv [4, 8], pv [2, 3], CellValue 5, pv [2, 3]]

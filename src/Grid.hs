@@ -1,8 +1,6 @@
 module Grid where
 
-import Data.Char
 import Data.IntSet (IntSet, difference, member)
-import Data.Maybe
 import Prelude
 
 -- Semantic types (ADR-0005)
@@ -10,11 +8,12 @@ type Value = Int
 
 type Candidates = IntSet
 
-data Cell = CellValue Int | EmptyCellVallue | PossibleValues Candidates deriving (Eq)
+-- Two-state by design (ADR-0004): a cell is solved or it has candidates.
+-- "Empty" is just PossibleValues over the board's full domain.
+data Cell = CellValue Int | PossibleValues Candidates deriving (Eq)
 
 instance Show Cell where
   show (CellValue a) = show a
-  show EmptyCellVallue = "."
   show (PossibleValues x) = show x
 
 isCellValue (CellValue _) = True
@@ -23,9 +22,6 @@ isCellValue _ = False
 cellValue :: Cell -> Int
 cellValue (CellValue n) = n
 cellValue _ = error "Cell is not value"
-
-isEmptyCell EmptyCellVallue = True
-isEmptyCell _ = False
 
 isPossibleValues (PossibleValues _) = True
 isPossibleValues _ = False
@@ -46,20 +42,7 @@ showGrid = concatMap show
 
 showCellData :: Cell -> String
 showCellData (CellValue n) = show n
-showCellData EmptyCellVallue = "."
 showCellData (PossibleValues p) = show p
-
-readGrid :: String -> Maybe Grid
-readGrid = traverse readCell
-  where
-    readCell '.' = Just EmptyCellVallue
-    readCell '0' = Just EmptyCellVallue
-    readCell c
-      | Data.Char.isDigit c && c > '0' = Just . CellValue . Data.Char.digitToInt $ c
-      | otherwise = Nothing
-
-readGridWith :: (Grid -> Grid) -> String -> Grid
-readGridWith f = f . fromJust . readGrid
 
 removeCellCandidates :: Cell -> Candidates -> Cell
 removeCellCandidates (PossibleValues p) list = PossibleValues (difference p list)

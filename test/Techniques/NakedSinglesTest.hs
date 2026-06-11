@@ -16,7 +16,7 @@ tests =
   testGroup
     "Techniques.NakedSingles"
     [ testCase "Places every single-candidate cell" $
-        nakedSingles testBoard1d [pv [3], CellValue 2, pv [1, 4], EmptyCellVallue, pv [5]]
+        nakedSingles testBoard1d [pv [3], CellValue 2, pv [1, 4], pv [1, 2, 3, 4, 5], pv [5]]
           @?= [ Finding NakedSingle [Place 0 3] [0],
                 Finding NakedSingle [Place 4 5] [4]
               ],

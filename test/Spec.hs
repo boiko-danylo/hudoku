@@ -1,7 +1,6 @@
 import qualified BoardTest
 import ClassicBoard
-import qualified GameTest
-import Grid
+import Data.Maybe (fromJust)
 import Solver
 import qualified SolverTest
 import qualified TechniqueTest
@@ -19,7 +18,6 @@ tests =
     "All tests"
     [ endToEndTests,
       BoardTest.tests,
-      GameTest.tests,
       TechniqueTest.tests,
       Techniques.NakedSubsetsTest.tests,
       Techniques.HiddenSubsetsTest.tests,
@@ -51,4 +49,4 @@ endToEndTests =
 solves :: String -> String -> TestTree
 solves name puzzle = testCase (name ++ " grid solved") $ outcome @?= Solved
   where
-    (outcome, _, _) = runSolver standardTechniques classicBoard (readGridWith classicInit puzzle)
+    (outcome, _, _) = runSolver standardTechniques classicBoard (fromJust (readClassicGrid puzzle))

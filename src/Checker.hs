@@ -4,7 +4,6 @@ import Board
 import Data.List (group, sort)
 import Grid
 
--- TODO: Cover with tests
 -- | A grid is correct when no group repeats a solved value.
 isBoardCorrect :: Board -> Grid -> Bool
 isBoardCorrect b g = all groupCorrect (boardGroups b)

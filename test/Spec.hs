@@ -1,6 +1,9 @@
 import qualified BoardTest
+import qualified CheckerTest
 import ClassicBoard
 import Data.Maybe (fromJust)
+import qualified GridShowersTest
+import qualified GridTest
 import Solver
 import qualified SolverTest
 import qualified TechniqueTest
@@ -18,6 +21,9 @@ tests =
     "All tests"
     [ endToEndTests,
       BoardTest.tests,
+      CheckerTest.tests,
+      GridTest.tests,
+      GridShowersTest.tests,
       TechniqueTest.tests,
       Techniques.NakedSubsetsTest.tests,
       Techniques.HiddenSubsetsTest.tests,

@@ -68,7 +68,10 @@ solveTests :: TestTree
 solveTests =
   testGroup
     "runSolver"
-    [ testCase "Solved grid with no findings reports Solved, empty journal" $
+    [ testCase "Outcome renders for journal display" $ do
+        show Solved @?= "Solved"
+        show Stuck @?= "Stuck",
+      testCase "Solved grid with no findings reports Solved, empty journal" $
         runSolver [] classicBoard solvedGrid
           @?= (Solved, solvedGrid, []),
       testCase "Unsolvable-by-these-techniques grid reports Stuck" $ do

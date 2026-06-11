@@ -1,6 +1,7 @@
 module TechniqueTest where
 
 import ClassicBoard (readClassicGrid)
+import Control.Exception (ErrorCall, evaluate, try)
 import Data.Maybe (fromJust)
 import qualified Data.IntSet as IntSet
 import Grid
@@ -21,7 +22,24 @@ tests =
     [ applyUpdateTests,
       applyFindingTests,
       eliminateToTests,
-      eliminateFromTests
+      eliminateFromTests,
+      displayTests
+    ]
+
+displayTests :: TestTree
+displayTests =
+  testGroup
+    "debug display and bounds"
+    [ testCase "Finding renders for debugging" $
+        show (Finding NakedSingle [Place 0 1] [0])
+          @?= "Finding {findingTechnique = NakedSingle, findingUpdates = [Place 0 1], findingInvolved = [0]}",
+      testCase "CellUpdate and sized TechniqueId render" $ do
+        show (Eliminate 2 (cands [4, 7])) @?= "Eliminate 2 (fromList [4,7])"
+        show (NakedSubset 2) @?= "NakedSubset 2"
+        show (HiddenSubset 1) @?= "HiddenSubset 1",
+      testCase "adjustCell out of range is a loud error" $ do
+        r <- try (evaluate (adjustCell 5 id [CellValue 1]))
+        either (\e -> seq (e :: ErrorCall) True) (const False) r @? "expected an error"
     ]
 
 applyUpdateTests :: TestTree

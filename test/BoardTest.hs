@@ -22,6 +22,8 @@ showClassicBoardTest = testCase "Classic board structure" $ do
   boardCellCount classicBoard @?= 81
   length (boardGroups classicBoard) @?= 27
   map (size . groupCells) (boardGroups classicBoard) @?= replicate 27 9
+  map groupConstraint (boardGroups classicBoard) @?= replicate 27 AllDifferent
+  boardValues testBoard1d @?= fromList [1 .. 5]
 
 getPossibleValuesTestGroup = testGroup "getPossibleValues test group" [getPossibleValuesTestPv, getPossibleValuesTestValue]
 
@@ -41,7 +43,9 @@ gridSolvedTests =
     [ testCase "Check solved simplest grid" $
         gridSolved testBoard1d (map CellValue [1 .. 5]) @?= True,
       testCase "Check not solved simplest grid" $
-        gridSolved testBoard1d [CellValue 1, CellValue 2, CellValue 3, CellValue 4, PossibleValues (fromList [5])] @?= False
+        gridSolved testBoard1d [CellValue 1, CellValue 2, CellValue 3, CellValue 4, PossibleValues (fromList [5])] @?= False,
+      testCase "Fully solved but invalid grid is not solved" $
+        gridSolved testBoard1d [CellValue 1, CellValue 1, CellValue 3, CellValue 4, CellValue 5] @?= False
     ]
 
 readGridForTests =

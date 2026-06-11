@@ -20,6 +20,7 @@ Keys:
   c      cycle to the next camera (e.g. switch to iPhone Continuity Camera)
   p      print the recognized 81-char strings to the terminal
   s      save an annotated snapshot to /tmp
+  h      toggle the on-screen hotkey legend
   q/ESC  quit (closing the window or Ctrl-C also works)
 """
 
@@ -94,6 +95,30 @@ def hud(view, lines):
     for i, t in enumerate(lines):
         cv2.putText(view, t, (6 + pad, 6 + lh * (i + 1)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.55, GREEN, 1)
+
+
+LEGEND = [
+    "SPACE pause/resume",
+    "o     OCR center grid",
+    "a     OCR all grids",
+    "v     view: normal/detect/cells",
+    "c     next camera",
+    "p     print puzzle strings",
+    "s     save snapshot",
+    "h     hide this legend",
+    "q/ESC quit",
+]
+
+
+def draw_legend(view):
+    pad, lh = 8, 20
+    w = max(cv2.getTextSize(t, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0][0] for t in LEGEND)
+    x0 = view.shape[1] - w - 2 * pad - 6
+    y0 = view.shape[0] - lh * len(LEGEND) - pad - 6
+    cv2.rectangle(view, (x0, y0), (view.shape[1] - 6, view.shape[0] - 6), (0, 0, 0), -1)
+    for i, t in enumerate(LEGEND):
+        cv2.putText(view, t, (x0 + pad, y0 + lh * (i + 1)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, YELLOW, 1)
 
 
 def metrics_lines(frame, gray, quads, fps, worker, cam_idx, mode, status=""):
@@ -229,6 +254,7 @@ def run():
     cv2.namedWindow("hudoku live", cv2.WINDOW_AUTOSIZE)
     focus_window()
     paused, frozen = False, None
+    show_legend = True
     status, status_until = "", 0.0
     history = collections.defaultdict(lambda: collections.deque(maxlen=5))
     last_quads = []
@@ -265,6 +291,8 @@ def run():
                                 cam_idx if cap is not None else None, mode,
                                 ("PAUSED  " if paused else "")
                                 + (status if time.time() < status_until else "")))
+        if show_legend:
+            draw_legend(view)
         cv2.imshow("hudoku live", view)
 
         key = cv2.waitKey(30 if still is None else 200) & 0xFF
@@ -292,6 +320,8 @@ def run():
             status, status_until = f"key {chr(key) if 32 <= key < 127 else key}", time.time() + 1
         elif key == ord("v"):
             mode_i = (mode_i + 1) % len(modes)
+        elif key == ord("h"):
+            show_legend = not show_legend
         elif key == ord("c") and cap is not None:
             cap.release()
             new_idx, new_cap = open_camera(cam_idx + 1, tried_from=None)

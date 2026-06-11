@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f789a80513f3fe597eb7bce3a465e9c5cebf9390f48bc724b97dc85dcd698b15
+-- hash: 8caf5a48915ef37132ee528876fca20cd16e31a216b1d3fc585a294b5eb74007
 
 name:           Hudoku
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       Game
       Grid
       GridShowers
+      Solver
       Technique
       Techniques.NakedSubsets
   other-modules:
@@ -78,6 +79,7 @@ test-suite test
       GameTest
       GridTest
       Missions.Classic.Hard
+      SolverTest
       Techniques.NakedSubsetsTest
       TechniqueTest
       TestBoard1d

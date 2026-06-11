@@ -2,3 +2,4 @@
 simple.cabal
 *~
 /dist-newstyle
+*.prof

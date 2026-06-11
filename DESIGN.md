@@ -77,17 +77,15 @@ inside techniques.
   `updatePossibleValues`, `updateUniqueValues`, `updateGridWithValues`,
   `refreshGridValues`, `recursiveUpdateWith`); scenarios were ported to the
   new tests first.
-- `Game.hs` is module-deprecated (superseded by `Solver`); only `GameTest`
-  still references it — dies with the ADR-0004 slice.
+- ADR-0004 and ADR-0005 are implemented: two-state `Cell`, board-aware
+  `readGridFor`, semantic types throughout; `Game.hs` is gone.
 
 ## Known debt
 
 - `posToNum` is a linear search; `Grid` is a list indexed with `!!`/`splitAt`.
   Candidates for `Vector` / `IntMap` (also a learning topic; partly dissolves
   under ADR-0002).
-- `EmptyCellVallue` still exists (ADR-0004 not yet implemented); grid
-  construction still goes through `classicInit`/`initPossibleValues'`.
-- Bare `Int`s linger in old signatures (`cellValue`, `posToNum`, `numToPos`,
-  `Board Int Int`) — ADR-0005 sweep pending.
 - `Main.hs` solves a hardcoded grid; reading from stdin/args still to do.
 - Description renderer for Findings (UI layer) not started.
+- `test/Missions/` + `hard.json`: dormant sudoku.com puzzle corpus (with
+  solutions) — revive as an end-to-end test pack when useful.

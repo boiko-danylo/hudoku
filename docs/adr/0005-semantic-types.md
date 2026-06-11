@@ -1,7 +1,7 @@
 # ADR-0005: Semantic types for domain quantities
 
 Date: 2026-06-11
-Status: Accepted
+Status: Implemented (2026-06-11)
 
 ## Context
 

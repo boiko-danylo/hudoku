@@ -62,26 +62,32 @@ inside techniques.
 - **Hypergraph refactor timing.** ADR-0002 is accepted but parked; new code
   should at least not deepen coupling to `Position` coordinates.
 
-## Current state (2026-06)
+## Current state (2026-06, post-migration)
 
-- `Board` = dimensions + size + `[Group]` + position list; `Position = [Int]`
-  (predates ADR-0002/0003).
-- `Grid = [Cell]`, `Cell = CellValue | EmptyCellVallue | PossibleValues IntSet`
-  (predates ADR-0004).
-- `Game` monad = `StateT Grid (ReaderT Board Identity)`; migration from pure
-  pipeline style is in progress (`Main.hs` is a scratchpad).
-- Techniques: candidate elimination + unique-in-group (`Board.hs`),
-  hidden subsets (pure style), naked subsets (monadic style, incomplete) —
-  all predating the ADR-0001 contract.
-- `Steps` module is scaffolding for explainable solutions — not wired up yet.
+- The ADR-0001 pipeline is live end to end: `Technique → [Finding] →
+  Solver (RWS) → journal`. `runSolver standardTechniques` solves real
+  puzzles (see the end-to-end group in `test/Spec.hs`); `Main.hs` runs it.
+- Techniques (one module each under `Techniques/`): `peerElimination`,
+  `nakedSingles`, `nakedSubsets n`, `hiddenSubsets n`;
+  `hiddenSingles = hiddenSubsets 1` (partial application, tagged
+  `HiddenSubset 1`). Family combinator: `Technique.onGroups`.
+- `TechniqueId` carries the subset size — the journal doubles as a
+  difficulty record.
+- All pre-ADR solving code is gone (`Algs/*`, `Steps`,
+  `updatePossibleValues`, `updateUniqueValues`, `updateGridWithValues`,
+  `refreshGridValues`, `recursiveUpdateWith`); scenarios were ported to the
+  new tests first.
+- `Game.hs` is module-deprecated (superseded by `Solver`); only `GameTest`
+  still references it — dies with the ADR-0004 slice.
 
 ## Known debt
 
-- `posToNum` is a linear search; `Grid` is a list indexed with `!!`.
+- `posToNum` is a linear search; `Grid` is a list indexed with `!!`/`splitAt`.
   Candidates for `Vector` / `IntMap` (also a learning topic; partly dissolves
   under ADR-0002).
-- Typos baked into constructors: `EmptyCellVallue` (ADR-0004), `NackedSet`
-  (ADR-0001 rename).
-- No real CLI despite README; `Main.hs` needs replacing once a solver exists.
-- `initPossibleValues'` marked for deprecation (dissolves under ADR-0004);
-  `removeCandidates` untested.
+- `EmptyCellVallue` still exists (ADR-0004 not yet implemented); grid
+  construction still goes through `classicInit`/`initPossibleValues'`.
+- Bare `Int`s linger in old signatures (`cellValue`, `posToNum`, `numToPos`,
+  `Board Int Int`) — ADR-0005 sweep pending.
+- `Main.hs` solves a hardcoded grid; reading from stdin/args still to do.
+- Description renderer for Findings (UI layer) not started.

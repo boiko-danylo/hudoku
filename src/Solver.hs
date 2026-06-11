@@ -5,6 +5,10 @@ import Control.Monad.RWS.CPS
 import Data.Maybe (listToMaybe)
 import Grid
 import Technique
+import Techniques.HiddenSubsets
+import Techniques.NakedSingles
+import Techniques.NakedSubsets
+import Techniques.PeerElimination
 
 -- A Step is an applied Finding (DESIGN.md terminology)
 type Step = Finding
@@ -35,3 +39,17 @@ firstFinding ts board grid = listToMaybe (concatMap (\t -> t board grid) ts)
 -- | Unwrap the machine: final verdict, final grid, the journal.
 runSolver :: [Technique] -> Board -> Grid -> (Outcome, Grid, [Step])
 runSolver techniques = runRWS (solveWith techniques)
+
+-- | The default arsenal, cheapest first; the order is the difficulty scale.
+standardTechniques :: [Technique]
+standardTechniques =
+  [ peerElimination,
+    nakedSingles,
+    hiddenSingles,
+    nakedSubsets 2,
+    hiddenSubsets 2,
+    nakedSubsets 3,
+    hiddenSubsets 3,
+    nakedSubsets 4,
+    hiddenSubsets 4
+  ]

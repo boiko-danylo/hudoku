@@ -59,10 +59,10 @@ applyFindingTests =
     ]
   where
     snapshot = [pv [2, 4, 7, 9]]
-    finding updates = Finding NakedSubset updates []
+    finding updates = Finding (NakedSubset 2) updates []
     classicGrid = readGridWith classicInit "...1.5.68......7.19.1....3...7.26...5.......3...87.4...3....8.51.5......79.4.1..."
     rowIndexes = [0 .. 8] -- whole first row, solved cells included
-    rowFinding = Finding NakedSubset [Eliminate i (cands [1, 5, 6, 8]) | i <- rowIndexes] rowIndexes
+    rowFinding = Finding (NakedSubset 2) [Eliminate i (cands [1, 5, 6, 8]) | i <- rowIndexes] rowIndexes
     candidateIndexes = [0, 1, 2, 4, 6] -- the '.' cells of the first row
     classicExpected =
       [ if i `elem` candidateIndexes then pv [2, 3, 4, 7, 9] else c

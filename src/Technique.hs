@@ -1,13 +1,20 @@
 module Technique where
 
-import Board (Board, GridIndex)
+import Board
 import qualified Data.IntSet as IntSet
-import Data.List (foldl')
+import Data.List (foldl', subsequences)
 import Grid
 
+-- Size of a naked/hidden subset (1 = single, 2 = pair, 3 = triple, ...)
+type SubsetSize = Int
+
 -- Which technique produced a finding
-data TechniqueId = NakedSubset | HiddenSubset
-  deriving (Read, Show, Enum, Eq)
+data TechniqueId
+  = PeerElimination
+  | NakedSingle
+  | NakedSubset SubsetSize
+  | HiddenSubset SubsetSize
+  deriving (Show, Eq)
 
 -- An instruction against the *current* grid (ADR-0006)
 data CellUpdate
@@ -25,8 +32,20 @@ data Finding = Finding
 
 type Technique = Board -> Grid -> [Finding]
 
--- Size of a naked/hidden subset (2 = pair, 3 = triple, ...)
-type SubsetSize = Int
+-- The group-scanning technique family: plug in a group handler, get a Technique
+onGroups :: ([CellInfo] -> [Finding]) -> Technique
+onGroups f board grid = concatMap (f . groupToCellInfo board grid) (boardGroups board)
+
+-- | All value-sets of size n drawn from the open cells' candidates.
+--   Shared by the subset technique family (naked and hidden).
+valueSets :: SubsetSize -> [CellInfo] -> [Candidates]
+valueSets n open =
+  [ IntSet.fromList vs
+    | vs <- subsequences (IntSet.toList groupValues),
+      length vs == n
+  ]
+  where
+    groupValues = IntSet.unions (map (cellCandidates . cellInfoCell) open)
 
 -- Apply side: the generic machinery (ADR-0001)
 

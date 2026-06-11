@@ -3,7 +3,6 @@ module ClassicBoard where
 import Grid
 import Board
 import Data.List
-import Game
 
 classicBoard = Board 2 9 classicGroups classicPositions
 
@@ -32,6 +31,3 @@ classicPositions= sortBy (\(a, _) (b, _)-> compare a b) grid
     row n = map (`item` n) [1..9]
     item x y = (num x y, Position [x,y])
     num x y = ((y - 1) * 9) + x
-
-classicGame :: Game ()
-classicGame = initGame classicBoard

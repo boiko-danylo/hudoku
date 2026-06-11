@@ -80,75 +80,6 @@ setCellInfoValue (p, i, _) n = (p, i, n)
 numToPos :: Board -> Grid -> Int -> Position
 numToPos (Board _ _ _ pl) g p = snd (fromJust $ find (\(i, _) -> i == p) pl)
 
-getUniqueGroupValues :: Board -> Grid -> Group -> Candidates
-getUniqueGroupValues (Board d s gs pl) grid groupNum = unique $ freq $ pv groupNum
-  where
-    unique :: [(Int, Int)] -> Candidates
-    unique list = IntSet.fromList $ map fst $ filter (\(x, l) -> l == 1) list
-    pv :: Group -> [Int]
-    pv = concatMap (pvToList . cellToPV . posToCell')
-
-    pvToList :: Candidates -> [Int]
-    pvToList = IntSet.toAscList
-
-    cellToPV :: Cell -> Candidates
-    cellToPV (PossibleValues p) = p
-    cellToPV _ = IntSet.empty
-    posToCell' :: Position -> Cell
-    posToCell' = posToCell (Board d s gs pl) grid
-    freq :: [Int] -> [(Int, Int)] -- (value, length)
-    freq = map (\x -> (head x, length x)) . group . sort
-
-updateUniqueValues :: Board -> Grid -> Grid
-updateUniqueValues board grid = updateGridWithValues board grid (updates (z grid))
-  where
-    updates :: [(Group, Candidates)] -> [(Position, Cell)]
-    updates = concatMap updates'
-    updates' :: (Group, Candidates) -> [(Position, Cell)]
-    updates' (g, vals) = map (\val -> (updatePos g val, CellValue val)) $ IntSet.toAscList vals
-    updatePos :: Group -> Int -> Position
-    updatePos g v = fromJust $ find (\pos -> isPossibleValuesHasValue (posToCell' pos) v) g
-    z :: Grid -> [(Group, Candidates)]
-    z grid = zip (boardGroups board) (uniq grid)
-    uniq :: Grid -> [Candidates]
-    uniq grid = map (getUniqueGroupValues board grid) (boardGroups board)
-    posToCell' = posToCell board grid
-
-{-# DEPRECATED updateGridWithValues "Superseded by Technique.applyUpdate (ADR-0006 deltas)" #-}
-updateGridWithValues :: Board -> Grid -> [(Position, Cell)] -> Grid
-updateGridWithValues board grid values = map update pl
-  where
-    pl = boardPositionList board
-    update :: (Int, Position) -> Cell
-    update (index, pos) = fromMaybe (grid !! (index - 1)) (posValue pos)
-    posValue :: Position -> Maybe Cell
-    posValue pos = snd <$> find (\(p, c) -> p == pos) values -- Only one update per position
-
-updatePossibleValues :: Board -> Grid -> Grid
-updatePossibleValues (Board d s gs pl) grid = map updateCell gridToMap
-  where
-    updateCell :: (Position, Cell) -> Cell
-    updateCell (_, CellValue n) = CellValue n
-    updateCell (pos, PossibleValues pvals) = PossibleValues (filterPvals pos pvals)
-    updateCell (_, EmptyCellVallue) = error "init values before update"
-
-    filterPvals pos = IntSet.filter (\old -> old `IntSet.notMember` getActiveVals (groupsByPos pos))
-
-    gridToMap :: [(Position, Cell)]
-    gridToMap = map (\n -> (snd n, grid !! (fst n - 1))) pl
-    groupsByPos pos = filter (elem pos) gs
-
-    getActiveVals :: [Group] -> Candidates
-    getActiveVals grps = IntSet.fromList $ map (fromJust . getActiveVals'') $ filter filterAval $ getActiveVals' grps
-    --  Get array of Cell's
-    getActiveVals' :: [Group] -> [Cell]
-    getActiveVals' grps = map posToCell' (nub $ concat grps)
-    getActiveVals'' (CellValue a) = Just a
-    getActiveVals'' _ = Nothing
-    filterAval (CellValue _) = True
-    filterAval _ = False
-    posToCell' = posToCell (Board d s gs pl) grid
-
 boardGroups :: Board -> [Group]
 boardGroups (Board _ _ g _) = g
 
@@ -179,14 +110,6 @@ groupSolved board group grid = not (hasNothing group || notEqual group)
 
 gridSolved :: Board -> Grid -> Bool
 gridSolved (Board d s gs pl) grid = all (\g -> groupSolved (Board d s gs pl) g grid) gs
-
-recursiveUpdateWith :: (Grid -> Grid) -> Grid -> Grid
-recursiveUpdateWith f grid
-  | grid == update = grid
-  | otherwise = recursiveUpdateWith f update
-  where
-    update :: Grid
-    update = f grid
 
 getCellsInfoFromGroup :: Board -> Grid -> Int -> [CellInfo]
 getCellsInfoFromGroup board grid group = map posToCellInfo' boardGroup

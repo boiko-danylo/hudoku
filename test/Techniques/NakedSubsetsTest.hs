@@ -59,7 +59,7 @@ nakedSubsetAtTests =
     "nakedSubsetAt"
     [ testCase "Naked pair eliminates from non-members, members are involved" $
         nakedSubsetAt 2 pairCells (cands [4, 7])
-          @?= Just (Finding NakedSubset [Eliminate 2 (cands [4])] [0, 1]),
+          @?= Just (Finding (NakedSubset 2) [Eliminate 2 (cands [4])] [0, 1]),
       testCase "Set with too few member cells is not naked" $
         nakedSubsetAt 2 pairCells (cands [2, 4])
           @?= Nothing,
@@ -79,7 +79,7 @@ nakedSubsetsTests =
     [ testCase "Triple formed by strict subsets of its value-set" $
         nakedSubsets 3 classicBoard tripleGrid
           @?= [ Finding
-                  NakedSubset
+                  (NakedSubset 3)
                   [Eliminate 3 (cands [1]), Eliminate 4 (cands [2, 3])]
                   [0, 1, 2]
               ],
@@ -114,7 +114,7 @@ portedScenarioTests =
         let found = nakedSubsets 2 classicBoard size2Grid
         found
           @?= [ Finding
-                  NakedSubset
+                  (NakedSubset 2)
                   [Eliminate 2 (cands [2, 3]), Eliminate 5 (cands [3])]
                   [6, 8]
               ]

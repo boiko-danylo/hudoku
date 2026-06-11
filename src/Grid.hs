@@ -1,7 +1,7 @@
 module Grid where
 
 import Data.Char
-import Data.IntSet (IntSet, difference, findMin, member, size)
+import Data.IntSet (IntSet, difference, member)
 import Data.Maybe
 import Prelude
 
@@ -48,13 +48,6 @@ showCellData :: Cell -> String
 showCellData (CellValue n) = show n
 showCellData EmptyCellVallue = "."
 showCellData (PossibleValues p) = show p
-
-refreshGridValues :: Grid -> Grid
-refreshGridValues = map refreshGridValue
-
-refreshGridValue :: Cell -> Cell
-refreshGridValue (PossibleValues p) = if size p == 1 then CellValue (findMin p) else PossibleValues p
-refreshGridValue x = x
 
 readGrid :: String -> Maybe Grid
 readGrid = traverse readCell

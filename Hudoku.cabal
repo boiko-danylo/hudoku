@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8caf5a48915ef37132ee528876fca20cd16e31a216b1d3fc585a294b5eb74007
+-- hash: f7972785d4755bbdc14ab399abeb606da5fd694082daf8e34adae4eb5eb026ed
 
 name:           Hudoku
 version:        0.1.0.0
@@ -26,7 +26,6 @@ source-repository head
 
 library
   exposed-modules:
-      Algs.HiddenSets
       Board
       Checker
       ClassicBoard
@@ -35,7 +34,10 @@ library
       GridShowers
       Solver
       Technique
+      Techniques.HiddenSubsets
+      Techniques.NakedSingles
       Techniques.NakedSubsets
+      Techniques.PeerElimination
   other-modules:
       Paths_Hudoku
   hs-source-dirs:
@@ -74,13 +76,15 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Algs.HiddenSubsetsTest
       BoardTest
       GameTest
       GridTest
       Missions.Classic.Hard
       SolverTest
+      Techniques.HiddenSubsetsTest
+      Techniques.NakedSinglesTest
       Techniques.NakedSubsetsTest
+      Techniques.PeerEliminationTest
       TechniqueTest
       TestBoard1d
       Paths_Hudoku

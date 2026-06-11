@@ -7,6 +7,7 @@ import Solver
 import Technique
 import Test.Tasty
 import Test.Tasty.HUnit
+import Techniques.NakedSingles (nakedSingles)
 import Techniques.NakedSubsets (nakedSubsets)
 
 pv :: [Value] -> Cell
@@ -14,14 +15,6 @@ pv = PossibleValues . IntSet.fromList
 
 cands :: [Value] -> Candidates
 cands = IntSet.fromList
-
--- Test-double technique: places any cell that has a single candidate left
-singlesDouble :: Technique
-singlesDouble _ grid =
-  [ Finding NakedSubset [Place i (IntSet.findMin cs)] [i]
-    | (i, PossibleValues cs) <- zip [0 ..] grid,
-      IntSet.size cs == 1
-  ]
 
 -- Must never be evaluated; proves firstFinding's laziness
 bomb :: Technique
@@ -60,14 +53,14 @@ firstFindingTests =
         firstFinding [always findingA, always findingB] classicBoard solvedGrid
           @?= Just findingA,
       testCase "Later techniques never run when an earlier one finds (laziness)" $
-        firstFinding [singlesDouble, bomb] classicBoard oneOpen
-          @?= Just (Finding NakedSubset [Place 0 1] [0])
+        firstFinding [nakedSingles, bomb] classicBoard oneOpen
+          @?= Just (Finding NakedSingle [Place 0 1] [0])
     ]
   where
     oneOpen = pv [1] : drop 1 solvedGrid
     always f _ _ = [f]
-    findingA = Finding NakedSubset [Place 10 1] [10]
-    findingB = Finding NakedSubset [Place 20 2] [20]
+    findingA = Finding NakedSingle [Place 10 1] [10]
+    findingB = Finding NakedSingle [Place 20 2] [20]
 
 solveTests :: TestTree
 solveTests =
@@ -82,18 +75,18 @@ solveTests =
         grid' @?= size2Expected
         journal
           @?= [ Finding
-                  NakedSubset
+                  (NakedSubset 2)
                   [Eliminate 2 (cands [2, 3]), Eliminate 5 (cands [3])]
                   [6, 8]
               ],
       testCase "Applies one finding per scan and journals them in order" $ do
         let twoOpen = pv [1] : pv [2] : drop 2 solvedGrid
-            (outcome, grid', journal) = runSolver [singlesDouble] classicBoard twoOpen
+            (outcome, grid', journal) = runSolver [nakedSingles] classicBoard twoOpen
         outcome @?= Solved
         grid' @?= solvedGrid
         journal
-          @?= [ Finding NakedSubset [Place 0 1] [0],
-                Finding NakedSubset [Place 1 2] [1]
+          @?= [ Finding NakedSingle [Place 0 1] [0],
+                Finding NakedSingle [Place 1 2] [1]
               ]
     ]
   where

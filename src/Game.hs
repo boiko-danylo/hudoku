@@ -1,4 +1,4 @@
-module Game where
+module Game {-# DEPRECATED "Superseded by Solver (Solve, runSolver)" #-} where
 
 import Board
 import Control.Monad

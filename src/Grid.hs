@@ -1,6 +1,6 @@
 module Grid where
 
-import Data.IntSet (IntSet, difference, member)
+import Data.IntSet (IntSet, difference)
 import Prelude
 
 -- Semantic types (ADR-0005)
@@ -10,7 +10,7 @@ type Candidates = IntSet
 
 -- Two-state by design (ADR-0004): a cell is solved or it has candidates.
 -- "Empty" is just PossibleValues over the board's full domain.
-data Cell = CellValue Int | PossibleValues Candidates deriving (Eq)
+data Cell = CellValue Value | PossibleValues Candidates deriving (Eq)
 
 instance Show Cell where
   show (CellValue a) = show a
@@ -19,7 +19,7 @@ instance Show Cell where
 isCellValue (CellValue _) = True
 isCellValue _ = False
 
-cellValue :: Cell -> Int
+cellValue :: Cell -> Value
 cellValue (CellValue n) = n
 cellValue _ = error "Cell is not value"
 
@@ -29,10 +29,6 @@ isPossibleValues _ = False
 cellCandidates :: Cell -> Candidates
 cellCandidates (PossibleValues x) = x
 cellCandidates _ = error "Cell can't have candidates"
-
-isPossibleValuesHasValue :: Cell -> Int -> Bool
-isPossibleValuesHasValue (PossibleValues vals) x = x `member` vals
-isPossibleValuesHasValue _ _ = False
 
 type Grid = [Cell]
 

@@ -15,6 +15,10 @@ import Grid
 newtype Position = Position [Int]
   deriving (Show, Eq)
 
+type Dimensions = Int
+
+type Size = Int
+
 type GridIndex = Int
 
 type GroupIndex = Int
@@ -25,8 +29,7 @@ type Group = [Position]
 
 type CellInfo = (Position, GridIndex, Cell)
 
--- Dim, size, groups
-data Board = Board Int Int [Group] PositionList
+data Board = Board Dimensions Size [Group] PositionList
 
 instance Show Board where
   show (Board d s g _) = "Dim: " ++ show d ++ ", Size: " ++ show s ++ ", Groups: " ++ show (length g)
@@ -58,16 +61,10 @@ showGroups :: [Group] -> String
 showGroups [] = ""
 showGroups g = show (head g) ++ "\n" ++ showGroups (tail g)
 
-boardGroupIndexes :: Board -> [GroupIndex]
-boardGroupIndexes b = [0 .. length (boardGroups b) - 1]
-
-cellGetGroups :: Board -> Position -> [Group]
-cellGetGroups (Board _ _ gs _) p = filter (elem p) gs
-
 posToCell :: Board -> Grid -> Position -> Cell
 posToCell b g p = g !! posToNum b p
 
-posToNum :: Board -> Position -> Int
+posToNum :: Board -> Position -> GridIndex
 posToNum (Board _ _ _ pl) = pos
   where
     pos x = fst (fromJust $ pos' x) - 1
@@ -79,25 +76,16 @@ posToCellInfo b g p = (p, posToNum b p, posToCell b g p)
 groupToCellInfo :: Board -> Grid -> Group -> [CellInfo]
 groupToCellInfo b g = map $ posToCellInfo b g
 
-cellInfoPosition :: CellInfo -> Position
-cellInfoPosition = fst3
-
-cellInfoIndex :: CellInfo -> Int
+cellInfoIndex :: CellInfo -> GridIndex
 cellInfoIndex = snd3
 
 cellInfoCell :: CellInfo -> Cell
 cellInfoCell = thd3
 
-setCellInfoValue :: CellInfo -> Cell -> CellInfo
-setCellInfoValue (p, i, _) n = (p, i, n)
-
-numToPos :: Board -> Grid -> Int -> Position
-numToPos (Board _ _ _ pl) g p = snd (fromJust $ find (\(i, _) -> i == p) pl)
-
 boardGroups :: Board -> [Group]
 boardGroups (Board _ _ g _) = g
 
-boardSize :: Board -> [Int]
+boardSize :: Board -> [Size]
 boardSize (Board d s g pl) = map dimSize [1 .. d]
   where
     dimSize d = maximum $ dimSize' d
@@ -105,9 +93,6 @@ boardSize (Board d s g pl) = map dimSize [1 .. d]
 
 boardGridLength :: Board -> Int
 boardGridLength (Board _ _ _ pl) = length pl
-
-boardDimensions :: Board -> Int
-boardDimensions (Board d _ _ _) = d
 
 boardPositionList :: Board -> PositionList
 boardPositionList (Board _ _ _ pl) = pl
@@ -125,14 +110,3 @@ groupSolved board group grid = not (hasNothing group || notEqual group)
 gridSolved :: Board -> Grid -> Bool
 gridSolved (Board d s gs pl) grid = all (\g -> groupSolved (Board d s gs pl) g grid) gs
 
-getCellsInfoFromGroup :: Board -> Grid -> Int -> [CellInfo]
-getCellsInfoFromGroup board grid group = map posToCellInfo' boardGroup
-  where
-    boardGroup = boardGroups board !! group
-    posToCellInfo' = posToCellInfo board grid
-
-getCellsFromGroup :: Board -> Grid -> Int -> [Cell]
-getCellsFromGroup board grid group = map posToCell' boardGroup
-  where
-    boardGroup = boardGroups board !! group
-    posToCell' = posToCell board grid

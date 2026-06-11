@@ -25,6 +25,9 @@ data Finding = Finding
 
 type Technique = Board -> Grid -> [Finding]
 
+-- Size of a naked/hidden subset (2 = pair, 3 = triple, ...)
+type SubsetSize = Int
+
 -- Apply side: the generic machinery (ADR-0001)
 
 applyUpdate :: CellUpdate -> Grid -> Grid
@@ -51,3 +54,13 @@ eliminateTo i (PossibleValues cs) allowed
   where
     removed = cs `IntSet.difference` allowed
 eliminateTo _ _ _ = Nothing
+
+-- | The dual of eliminateTo: remove `banned` candidates from a cell.
+--   Nothing when the cell holds none of them, so no-op findings never exist.
+eliminateFrom :: GridIndex -> Cell -> Candidates -> Maybe CellUpdate
+eliminateFrom i (PossibleValues cs) banned
+  | IntSet.null removed = Nothing
+  | otherwise = Just (Eliminate i removed)
+  where
+    removed = cs `IntSet.intersection` banned
+eliminateFrom _ _ _ = Nothing

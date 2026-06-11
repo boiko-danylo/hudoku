@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d828c789df8e26cb16f2bb27049c1285af2c68e1dc36bfab648706d2a10baa59
+-- hash: ad997ed763ca9d0bcb0a925ff0492130cc975849600b0a65f91057dd2e199e27
 
 name:           Hudoku
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       GridShowers
       Steps
       Technique
+      Techniques.NakedSubsets
   other-modules:
       Paths_Hudoku
   hs-source-dirs:
@@ -82,6 +83,7 @@ test-suite test
       GridTest
       Missions.Classic.Hard
       Steps
+      Techniques.NakedSubsetsTest
       TechniqueTest
       TestBoard1d
       Paths_Hudoku

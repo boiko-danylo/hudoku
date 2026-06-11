@@ -19,7 +19,8 @@ tests =
     "Technique"
     [ applyUpdateTests,
       applyFindingTests,
-      eliminateToTests
+      eliminateToTests,
+      eliminateFromTests
     ]
 
 applyUpdateTests :: TestTree
@@ -80,5 +81,20 @@ eliminateToTests =
           @?= Nothing,
       testCase "Solved cell produces no update" $
         eliminateTo 3 (CellValue 2) (cands [2])
+          @?= Nothing
+    ]
+
+eliminateFromTests :: TestTree
+eliminateFromTests =
+  testGroup
+    "eliminateFrom"
+    [ testCase "Removes only the banned candidates the cell holds" $
+        eliminateFrom 3 (pv [2, 4, 7, 9]) (cands [4, 7])
+          @?= Just (Eliminate 3 (cands [4, 7])),
+      testCase "Cell holding none of the banned produces no update" $
+        eliminateFrom 3 (pv [2, 9]) (cands [4, 7])
+          @?= Nothing,
+      testCase "Solved cell produces no update" $
+        eliminateFrom 3 (CellValue 4) (cands [4, 7])
           @?= Nothing
     ]

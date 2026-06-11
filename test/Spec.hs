@@ -10,6 +10,7 @@ import Data.Maybe
 import qualified GameTest
 import Grid
 import qualified TechniqueTest
+import qualified Techniques.NakedSubsetsTest
 import Test.Tasty
 import Test.Tasty.HUnit
 
@@ -26,7 +27,8 @@ tests =
       -- Algs.NakedSubsetsTest.tests,
       -- Algs.HiddenSubsetsTest.tests
       Algs.NakedSubsetsMonadicTest.tests,
-      TechniqueTest.tests
+      TechniqueTest.tests,
+      Techniques.NakedSubsetsTest.tests
     ]
 
 basicTests =

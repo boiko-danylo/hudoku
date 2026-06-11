@@ -3,3 +3,4 @@ simple.cabal
 *~
 /dist-newstyle
 *.prof
+.claude/settings.local.json

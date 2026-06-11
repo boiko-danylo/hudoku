@@ -133,21 +133,29 @@ _templates = None
 
 
 def _load_templates():
+    """digit -> list of template variants. npz keys are 'digit:fonttag',
+    so several publications' fonts can coexist."""
     global _templates
     if _templates is None:
+        _templates = {}
         if os.path.exists(TEMPLATE_FILE):
             data = np.load(TEMPLATE_FILE)
-            _templates = {d: data[d] for d in data.files}
-        else:
-            _templates = {}
+            for key in data.files:
+                _templates.setdefault(key.split(":")[0], []).append(data[key])
     return _templates
 
 
 def norm_digit(mask):
-    """Crop a digit mask to its bounding box, resize to 48x48 floats."""
+    """Digit mask -> 48x48 float, aspect ratio preserved on a square canvas
+    (stretching thin digits like 1 to a square loses their shape)."""
     ys, xs = np.where(mask > 0)
     crop = mask[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
-    return cv2.resize(crop, (48, 48), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
+    h, w = crop.shape
+    side = max(h, w)
+    canvas = np.zeros((side, side), dtype=mask.dtype)
+    canvas[(side - h) // 2:(side - h) // 2 + h,
+           (side - w) // 2:(side - w) // 2 + w] = crop
+    return cv2.resize(canvas, (48, 48), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
 
 
 def classify_mask(mask):
@@ -156,7 +164,8 @@ def classify_mask(mask):
     if not templates:
         return None, float("inf"), 0.0
     x = norm_digit(mask)
-    ranked = sorted(((float(np.abs(x - t).mean()), d) for d, t in templates.items()))
+    ranked = sorted((min(float(np.abs(x - t).mean()) for t in variants), d)
+                    for d, variants in templates.items())
     margin = ranked[1][0] - ranked[0][0] if len(ranked) > 1 else float("inf")
     return ranked[0][1], ranked[0][0], margin
 

@@ -48,6 +48,8 @@ inside techniques.
 - **ADR-0005** — Semantic types for domain quantities (`Value`, `GridIndex`,
   `Candidates`, …); no bare `Int` in exported signatures; display format is a
   renderer concern.
+- **ADR-0006** — Findings carry instructions/deltas (`Eliminate`/`Place`),
+  not result cells; event-sourcing style, batch application safe.
 
 ## Open questions
 

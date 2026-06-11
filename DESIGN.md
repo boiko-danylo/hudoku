@@ -92,5 +92,8 @@ inside techniques.
   `Vector` when profiling says so (a learning topic on its own).
 - `Main.hs` solves a hardcoded grid; reading from stdin/args still to do.
 - Description renderer for Findings (UI layer) not started.
-- `test/Missions/` + `hard.json`: dormant sudoku.com puzzle corpus (with
-  solutions) — revive as an end-to-end test pack when useful.
+- `corpus/` is the live puzzle corpus + progress tracker (CorpusTest solves
+  every entry; expectations recorded per puzzle — flip "stuck" to "solved"
+  when new techniques land). Ingestion: `tools/grid-ocr.py` (photo -> grids)
+  + `tools/verify.hs` (transcription check). `test/Missions/` + `hard.json`:
+  older dormant sudoku.com data, fold into corpus/ someday.

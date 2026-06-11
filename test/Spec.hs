@@ -1,5 +1,6 @@
 import qualified BoardTest
 import qualified CheckerTest
+import qualified CorpusTest
 import ClassicBoard
 import Data.Maybe (fromJust)
 import qualified GridShowersTest
@@ -14,12 +15,15 @@ import qualified Techniques.PeerEliminationTest
 import Test.Tasty
 import Test.Tasty.HUnit
 
-main = defaultMain tests
+main = do
+  corpus <- CorpusTest.corpusTests
+  defaultMain (tests corpus)
 
-tests =
+tests corpus =
   testGroup
     "All tests"
-    [ endToEndTests,
+    [ corpus,
+      endToEndTests,
       BoardTest.tests,
       CheckerTest.tests,
       GridTest.tests,

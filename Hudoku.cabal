@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 46d0c6b2d3d9da6b5121ea6c8b191f48f6c73ad149153a3300fce354b52e20d8
+-- hash: da2c09964261d4b054dd672a2a10cb7a0f7e51bf49ce1a73c6a71c854fd02021
 
 name:           Hudoku
 version:        0.1.0.0
@@ -78,6 +78,7 @@ test-suite test
   other-modules:
       BoardTest
       CheckerTest
+      CorpusTest
       GridShowersTest
       GridTest
       Missions.Classic.Hard

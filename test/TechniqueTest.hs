@@ -1,5 +1,6 @@
 module TechniqueTest where
 
+import ClassicBoard (classicInit)
 import qualified Data.IntSet as IntSet
 import Grid
 import Technique
@@ -48,11 +49,24 @@ applyFindingTests =
           @?= [pv [9]],
       testCase "Empty finding leaves the grid unchanged" $
         applyFinding (finding []) snapshot
-          @?= snapshot
+          @?= snapshot,
+      -- Port of the old Board.removeCandidates test: eliminate a row's solved
+      -- values from the whole row of a classic grid; only candidate cells change.
+      testCase "Eliminating across a classic 9x9 row touches only its candidate cells" $
+        applyFinding rowFinding classicGrid
+          @?= classicExpected
     ]
   where
     snapshot = [pv [2, 4, 7, 9]]
     finding updates = Finding NakedSubset updates []
+    classicGrid = readGridWith classicInit "...1.5.68......7.19.1....3...7.26...5.......3...87.4...3....8.51.5......79.4.1..."
+    rowIndexes = [0 .. 8] -- whole first row, solved cells included
+    rowFinding = Finding NakedSubset [Eliminate i (cands [1, 5, 6, 8]) | i <- rowIndexes] rowIndexes
+    candidateIndexes = [0, 1, 2, 4, 6] -- the '.' cells of the first row
+    classicExpected =
+      [ if i `elem` candidateIndexes then pv [2, 3, 4, 7, 9] else c
+        | (i, c) <- zip [0 ..] classicGrid
+      ]
 
 eliminateToTests :: TestTree
 eliminateToTests =

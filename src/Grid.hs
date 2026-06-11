@@ -10,10 +10,7 @@ type Value = Int
 
 type Candidates = IntSet
 
--- Deprecated alias, migrate to Candidates
-type CellPossibleValues = Candidates
-
-data Cell = CellValue Int | EmptyCellVallue | PossibleValues CellPossibleValues deriving (Eq)
+data Cell = CellValue Int | EmptyCellVallue | PossibleValues Candidates deriving (Eq)
 
 instance Show Cell where
   show (CellValue a) = show a
@@ -33,7 +30,7 @@ isEmptyCell _ = False
 isPossibleValues (PossibleValues _) = True
 isPossibleValues _ = False
 
-cellCandidates :: Cell -> CellPossibleValues
+cellCandidates :: Cell -> Candidates
 cellCandidates (PossibleValues x) = x
 cellCandidates _ = error "Cell can't have candidates"
 
@@ -71,6 +68,6 @@ readGrid = traverse readCell
 readGridWith :: (Grid -> Grid) -> String -> Grid
 readGridWith f = f . fromJust . readGrid
 
-removeCellCandidates :: Cell -> CellPossibleValues -> Cell
+removeCellCandidates :: Cell -> Candidates -> Cell
 removeCellCandidates (PossibleValues p) list = PossibleValues (difference p list)
 removeCellCandidates x _ = x

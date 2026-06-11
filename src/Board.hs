@@ -30,13 +30,13 @@ data Board = Board Int Int [Group] PositionList
 instance Show Board where
   show (Board d s g _) = "Dim: " ++ show d ++ ", Size: " ++ show s ++ ", Groups: " ++ show (length g)
 
-boardValues :: Board -> CellPossibleValues
+boardValues :: Board -> Candidates
 boardValues (Board _ n _ _) = IntSet.fromList $ range (1, n)
 
 showBoardGroups :: Board -> String
 showBoardGroups (Board _ _ g _) = showGroups g
 
-getPossibleValues :: Cell -> CellPossibleValues
+getPossibleValues :: Cell -> Candidates
 getPossibleValues (PossibleValues v) = v
 getPossibleValues _ = IntSet.empty
 
@@ -80,18 +80,18 @@ setCellInfoValue (p, i, _) n = (p, i, n)
 numToPos :: Board -> Grid -> Int -> Position
 numToPos (Board _ _ _ pl) g p = snd (fromJust $ find (\(i, _) -> i == p) pl)
 
-getUniqueGroupValues :: Board -> Grid -> Group -> CellPossibleValues
+getUniqueGroupValues :: Board -> Grid -> Group -> Candidates
 getUniqueGroupValues (Board d s gs pl) grid groupNum = unique $ freq $ pv groupNum
   where
-    unique :: [(Int, Int)] -> CellPossibleValues
+    unique :: [(Int, Int)] -> Candidates
     unique list = IntSet.fromList $ map fst $ filter (\(x, l) -> l == 1) list
     pv :: Group -> [Int]
     pv = concatMap (pvToList . cellToPV . posToCell')
 
-    pvToList :: CellPossibleValues -> [Int]
+    pvToList :: Candidates -> [Int]
     pvToList = IntSet.toAscList
 
-    cellToPV :: Cell -> CellPossibleValues
+    cellToPV :: Cell -> Candidates
     cellToPV (PossibleValues p) = p
     cellToPV _ = IntSet.empty
     posToCell' :: Position -> Cell
@@ -102,18 +102,19 @@ getUniqueGroupValues (Board d s gs pl) grid groupNum = unique $ freq $ pv groupN
 updateUniqueValues :: Board -> Grid -> Grid
 updateUniqueValues board grid = updateGridWithValues board grid (updates (z grid))
   where
-    updates :: [(Group, CellPossibleValues)] -> [(Position, Cell)]
+    updates :: [(Group, Candidates)] -> [(Position, Cell)]
     updates = concatMap updates'
-    updates' :: (Group, CellPossibleValues) -> [(Position, Cell)]
+    updates' :: (Group, Candidates) -> [(Position, Cell)]
     updates' (g, vals) = map (\val -> (updatePos g val, CellValue val)) $ IntSet.toAscList vals
     updatePos :: Group -> Int -> Position
     updatePos g v = fromJust $ find (\pos -> isPossibleValuesHasValue (posToCell' pos) v) g
-    z :: Grid -> [(Group, CellPossibleValues)]
+    z :: Grid -> [(Group, Candidates)]
     z grid = zip (boardGroups board) (uniq grid)
-    uniq :: Grid -> [CellPossibleValues]
+    uniq :: Grid -> [Candidates]
     uniq grid = map (getUniqueGroupValues board grid) (boardGroups board)
     posToCell' = posToCell board grid
 
+{-# DEPRECATED updateGridWithValues "Superseded by Technique.applyUpdate (ADR-0006 deltas)" #-}
 updateGridWithValues :: Board -> Grid -> [(Position, Cell)] -> Grid
 updateGridWithValues board grid values = map update pl
   where
@@ -137,7 +138,7 @@ updatePossibleValues (Board d s gs pl) grid = map updateCell gridToMap
     gridToMap = map (\n -> (snd n, grid !! (fst n - 1))) pl
     groupsByPos pos = filter (elem pos) gs
 
-    getActiveVals :: [Group] -> CellPossibleValues
+    getActiveVals :: [Group] -> Candidates
     getActiveVals grps = IntSet.fromList $ map (fromJust . getActiveVals'') $ filter filterAval $ getActiveVals' grps
     --  Get array of Cell's
     getActiveVals' :: [Group] -> [Cell]
@@ -147,16 +148,6 @@ updatePossibleValues (Board d s gs pl) grid = map updateCell gridToMap
     filterAval (CellValue _) = True
     filterAval _ = False
     posToCell' = posToCell (Board d s gs pl) grid
-
--- TODO: Cover with tests
-removeCandidates :: Board -> Grid -> [Position] -> CellPossibleValues -> Grid
-removeCandidates board grid posList vals = map update pl
-  where
-    pl = boardPositionList board
-    update :: (Int, Position) -> Cell
-    update (index, pos) = fromMaybe (grid !! (index - 1)) (posValue pos)
-    posValue :: Position -> Maybe Cell
-    posValue pos = (\pos -> removeCellCandidates (posToCell board grid pos) vals) <$> find (== pos) posList
 
 boardGroups :: Board -> [Group]
 boardGroups (Board _ _ g _) = g

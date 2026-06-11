@@ -1,4 +1,4 @@
-module Steps where
+module Steps {-# DEPRECATED "Superseded by Technique (Finding)" #-} where
 
 import Algs.Algs (Algorithm)
 import Board (CellInfo)

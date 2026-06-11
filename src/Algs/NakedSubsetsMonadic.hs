@@ -99,6 +99,7 @@ findNakedSubsetsNSubsets size input = result
     subsets = filter checkSubset possibleSubsets
     result = subsets
 
+{-# DEPRECATED applySubset, applySubsets "Superseded by Technique.applyUpdate (ADR-0006 deltas)" #-}
 applySubset :: Subset -> Cell -> Cell
 applySubset subset cell =
   if checkSubsetPV subset cell then cell else removeCellCandidates cell subset

@@ -14,33 +14,13 @@ main = defaultMain tests
 tests =
   testGroup
     "Board module tests"
-    [ removeCandidatesTests,
-      updateGridWithValuesTestGroup,
+    [ updateGridWithValuesTestGroup,
       showClassicBoardTest,
       getPossibleValuesTestGroup,
       updateUniqValuesTestGroup
     ]
 
-removeCandidatesTests = testGroup "Remove Candidates Tests" [removeCandidatesSimpleCase]
-
 simpleGrid = readGridWith classicInit "...1.5.68......7.19.1....3...7.26...5.......3...87.4...3....8.51.5......79.4.1..."
-
-expected =
-  updateGridWithValues
-    classicBoard
-    simpleGrid
-    [ (Position [1, 1], PossibleValues $ fromList [2, 3, 4, 7, 9]),
-      (Position [2, 1], PossibleValues $ fromList [2, 3, 4, 7, 9]),
-      (Position [3, 1], PossibleValues $ fromList [2, 3, 4, 7, 9]),
-      (Position [5, 1], PossibleValues $ fromList [2, 3, 4, 7, 9]),
-      (Position [7, 1], PossibleValues $ fromList [2, 3, 4, 7, 9])
-    ]
-
-group = head $ boardGroups classicBoard
-
-actual = removeCandidates classicBoard simpleGrid group $ fromList [1, 5, 6, 8]
-
-removeCandidatesSimpleCase = testCase "Simple rm candidates test case" $ assertEqual "Result is same" expected actual
 
 updateGridWithValuesTestGroup = testGroup "update grid with values tests" [updateGridWithValuesTest, updateGridWithValuesNegativeTest]
 

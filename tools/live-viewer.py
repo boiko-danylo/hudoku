@@ -10,9 +10,10 @@ Overlay, every frame (fast, pure OpenCV):
   - green outline around every detected grid, with its index
   - a small dot on every cell classified as containing a digit
 
-On demand (tesseract, ~10s/grid, runs in a background thread):
-  SPACE  OCR the grid nearest the frame center; digits are projected
-         back onto the page - compare them with the print
+Keys:
+  SPACE  pause / resume the feed (freeze a sharp frame, then OCR it)
+  o      OCR the grid nearest the frame center (background thread);
+         digits are projected back onto the page - compare with print
   a      OCR all detected grids
   v      cycle view: normal -> detect (page ink mask) -> cells (warped
          center grid + the exact mask the cell classifier sees)
@@ -226,6 +227,7 @@ def run():
 
     cv2.namedWindow("hudoku live", cv2.WINDOW_AUTOSIZE)
     focus_window()
+    paused, frozen = False, None
     status, status_until = "", 0.0
     history = collections.defaultdict(lambda: collections.deque(maxlen=5))
     last_quads = []
@@ -235,11 +237,14 @@ def run():
     while True:
         if still is not None:
             frame = still.copy()
+        elif paused and frozen is not None:
+            frame = frozen.copy()
         else:
             ok, frame = cap.read()
             if not ok:
                 time.sleep(0.05)
                 continue
+            frozen = frame
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         quads = so.find_grids(gray)
         if len(quads) != len(last_quads):
@@ -257,7 +262,8 @@ def run():
             view = overlay(frame, gray, quads, worker, history)
         hud(view, metrics_lines(frame, gray, quads, fps, worker,
                                 cam_idx if cap is not None else None, mode,
-                                status if time.time() < status_until else ""))
+                                ("PAUSED  " if paused else "")
+                                + (status if time.time() < status_until else "")))
         cv2.imshow("hudoku live", view)
 
         key = cv2.waitKey(30 if still is None else 200) & 0xFF
@@ -265,7 +271,10 @@ def run():
             break
         if cv2.getWindowProperty("hudoku live", cv2.WND_PROP_VISIBLE) < 1:
             break               # window closed with the mouse
-        elif key == ord(" "):
+        elif key == ord(" ") and still is None:
+            paused = not paused
+            status, status_until = ("PAUSED" if paused else "live"), time.time() + 2
+        elif key == ord("o"):
             if quads:
                 target = nearest_grid(quads, frame.shape)
                 worker.submit(gray, quads, [target])

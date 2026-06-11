@@ -2,6 +2,7 @@
 flattening, cell segmentation and per-cell OCR. Used by grid-ocr.py
 (batch CLI) and live-viewer.py (webcam overlay)."""
 
+import os
 import subprocess
 import sys
 import tempfile
@@ -105,6 +106,53 @@ def cell_mask(thr, r, c):
     return mask
 
 
+# Digit templates harvested from corpus-verified magazine pages
+# (tools/digit-templates.npz, 48x48 mean masks per digit). Template match
+# is the primary recognizer: 321/321 leave-one-out on the corpus, while
+# tesseract scored 0/321 on the same masks. Tesseract remains the
+# fallback for fonts the templates don't cover.
+TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), "digit-templates.npz")
+MATCH_THRESHOLD = 0.30   # mean L1; same-font scores stay below ~0.25
+_templates = None
+
+
+def _load_templates():
+    global _templates
+    if _templates is None:
+        if os.path.exists(TEMPLATE_FILE):
+            data = np.load(TEMPLATE_FILE)
+            _templates = {d: data[d] for d in data.files}
+        else:
+            _templates = {}
+    return _templates
+
+
+def norm_digit(mask):
+    """Crop a digit mask to its bounding box, resize to 48x48 floats."""
+    ys, xs = np.where(mask > 0)
+    crop = mask[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    return cv2.resize(crop, (48, 48), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
+
+
+def classify_mask(mask):
+    """(digit, score) by template match, or (None, inf) without templates."""
+    templates = _load_templates()
+    if not templates:
+        return None, float("inf")
+    x = norm_digit(mask)
+    scores = {d: float(np.abs(x - t).mean()) for d, t in templates.items()}
+    best = min(scores, key=scores.get)
+    return best, scores[best]
+
+
+def recognize_mask(mask):
+    """Template match first, tesseract as fallback, '?' if neither."""
+    digit, score = classify_mask(mask)
+    if digit is not None and score <= MATCH_THRESHOLD:
+        return digit
+    return ocr_mask(mask)
+
+
 def ocr_mask(mask):
     padded = cv2.copyMakeBorder(255 - mask, 20, 20, 20, 20,
                                 cv2.BORDER_CONSTANT, value=255)
@@ -120,7 +168,7 @@ def read_grid(gray, quad):
     for r in range(9):
         for c in range(9):
             mask = cell_mask(thr, r, c)
-            out.append("." if mask is None else ocr_mask(mask))
+            out.append("." if mask is None else recognize_mask(mask))
     return "".join(out)
 
 

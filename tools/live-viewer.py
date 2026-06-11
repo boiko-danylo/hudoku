@@ -271,7 +271,7 @@ def run():
             if not ok:
                 time.sleep(0.05)
                 continue
-            frozen = frame
+            frozen = frame.copy()   # clean copy: overlay() draws into frame
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         quads = so.find_grids(gray)
         if len(quads) != len(last_quads):

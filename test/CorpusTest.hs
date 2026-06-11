@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module CorpusTest (corpusTests) where
 
 import Checker

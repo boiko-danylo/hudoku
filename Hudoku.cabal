@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: da2c09964261d4b054dd672a2a10cb7a0f7e51bf49ce1a73c6a71c854fd02021
+-- hash: ac7e1691c55f02dc10ae7160f734ac3745aa9e7bbd680fc202f5364b2a3a24c4
 
 name:           Hudoku
 version:        0.1.0.0
@@ -42,6 +42,8 @@ library
       Paths_Hudoku
   hs-source-dirs:
       src
+  default-extensions:
+      OverloadedStrings
   build-depends:
       aeson
     , base >=4.7 && <5
@@ -59,6 +61,8 @@ executable exe
       Paths_Hudoku
   hs-source-dirs:
       app
+  default-extensions:
+      OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Hudoku
@@ -92,6 +96,8 @@ test-suite test
       Paths_Hudoku
   hs-source-dirs:
       test
+  default-extensions:
+      OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       HUnit

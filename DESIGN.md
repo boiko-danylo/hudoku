@@ -45,6 +45,9 @@ inside techniques.
   implementation for now, variants (killer, kropki, …) extend it later.
 - **ADR-0004** — Remove `EmptyCellVallue`; empty = full candidate set;
   `Cell` becomes two-state and total.
+- **ADR-0005** — Semantic types for domain quantities (`Value`, `GridIndex`,
+  `Candidates`, …); no bare `Int` in exported signatures; display format is a
+  renderer concern.
 
 ## Open questions
 

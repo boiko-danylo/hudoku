@@ -22,9 +22,10 @@ On demand (tesseract, ~10s/grid, runs in a background thread):
   q/ESC  quit (closing the window or Ctrl-C also works)
 """
 
-import collections
-
 import argparse
+import collections
+import os
+import subprocess
 import sys
 import threading
 import time
@@ -46,6 +47,7 @@ class OcrWorker:
         self.results = {}      # grid index -> 81-char string
         self.busy = False
         self.last_secs = None
+        self.error = None
         self.lock = threading.Lock()
 
     def submit(self, gray, quads, indexes):
@@ -64,10 +66,24 @@ class OcrWorker:
                 line = so.read_grid(gray, quads[i])
                 with self.lock:
                     self.results[i] = line
+        except Exception as e:           # surface, don't swallow
+            with self.lock:
+                self.error = f"OCR failed: {e}"
         finally:
             with self.lock:
                 self.busy = False
                 self.last_secs = time.time() - t0
+
+
+def focus_window():
+    """macOS: a HighGUI window opened from a terminal script doesn't get
+    keyboard focus, so waitKey never sees q/SPACE. Activate ourselves."""
+    if sys.platform == "darwin":
+        subprocess.run(
+            ["osascript", "-e",
+             'tell application "System Events" to set frontmost of '
+             f'(every process whose unix id is {os.getpid()}) to true'],
+            capture_output=True)
 
 
 def hud(view, lines):
@@ -79,7 +95,7 @@ def hud(view, lines):
                     cv2.FONT_HERSHEY_SIMPLEX, 0.55, GREEN, 1)
 
 
-def metrics_lines(frame, gray, quads, fps, worker, cam_idx, mode):
+def metrics_lines(frame, gray, quads, fps, worker, cam_idx, mode, status=""):
     lines = [f"{frame.shape[1]}x{frame.shape[0]}  fps {fps:.1f}  view:{mode}"
              + (f"  cam {cam_idx}" if cam_idx is not None else "")]
     lines.append(f"grids: {len(quads)}  bright {gray.mean():.0f}  contrast {gray.std():.0f}")
@@ -96,8 +112,12 @@ def metrics_lines(frame, gray, quads, fps, worker, cam_idx, mode):
     with worker.lock:
         if worker.busy:
             lines.append("OCR running...")
+        elif worker.error:
+            lines.append(worker.error)
         elif worker.last_secs is not None:
             lines.append(f"last OCR {worker.last_secs:.1f}s")
+    if status:
+        lines.append(status)
     return lines
 
 
@@ -205,6 +225,8 @@ def run():
         print(f"camera {cam_idx} (press c to cycle)")
 
     cv2.namedWindow("hudoku live", cv2.WINDOW_AUTOSIZE)
+    focus_window()
+    status, status_until = "", 0.0
     history = collections.defaultdict(lambda: collections.deque(maxlen=5))
     last_quads = []
     modes = ["normal", "detect", "cells"]
@@ -234,7 +256,8 @@ def run():
         if view is None:
             view = overlay(frame, gray, quads, worker, history)
         hud(view, metrics_lines(frame, gray, quads, fps, worker,
-                                cam_idx if cap is not None else None, mode))
+                                cam_idx if cap is not None else None, mode,
+                                status if time.time() < status_until else ""))
         cv2.imshow("hudoku live", view)
 
         key = cv2.waitKey(30 if still is None else 200) & 0xFF
@@ -242,11 +265,21 @@ def run():
             break
         if cv2.getWindowProperty("hudoku live", cv2.WND_PROP_VISIBLE) < 1:
             break               # window closed with the mouse
-        elif key == ord(" ") and quads:
-            target = nearest_grid(quads, frame.shape)
-            worker.submit(gray, quads, [target])
-        elif key == ord("a") and quads:
-            worker.submit(gray, quads, range(len(quads)))
+        elif key == ord(" "):
+            if quads:
+                target = nearest_grid(quads, frame.shape)
+                worker.submit(gray, quads, [target])
+                status, status_until = f"OCR queued for grid #{target + 1}", time.time() + 2
+            else:
+                status, status_until = "no grid detected to OCR", time.time() + 2
+        elif key == ord("a"):
+            if quads:
+                worker.submit(gray, quads, range(len(quads)))
+                status, status_until = f"OCR queued for {len(quads)} grids", time.time() + 2
+            else:
+                status, status_until = "no grid detected to OCR", time.time() + 2
+        elif key != 255:
+            status, status_until = f"key {chr(key) if 32 <= key < 127 else key}", time.time() + 1
         elif key == ord("v"):
             mode_i = (mode_i + 1) % len(modes)
         elif key == ord("c") and cap is not None:

@@ -54,8 +54,24 @@ def find_grids(gray, min_area_frac=0.015):
         h = np.linalg.norm(q[3] - q[0])
         if h > 0 and 0.75 < w / h < 1.33:
             quads.append(q)
+    quads = _dedupe(quads)
     quads.sort(key=lambda q: (round(q.mean(axis=0)[1] / 300), q.mean(axis=0)[0]))
     return quads
+
+
+def _dedupe(quads):
+    """A grid's outer frame and inner area can both match; keep the larger."""
+    quads = sorted(quads, key=lambda q: -cv2.contourArea(q.astype(np.int32)))
+    kept = []
+    for q in quads:
+        c, area = q.mean(axis=0), cv2.contourArea(q.astype(np.int32))
+        for k in kept:
+            if (np.linalg.norm(c - k.mean(axis=0)) < 0.35 * np.sqrt(area)
+                    and area / cv2.contourArea(k.astype(np.int32)) > 0.55):
+                break
+        else:
+            kept.append(q)
+    return kept
 
 
 def homography(quad, size=900):
@@ -135,21 +151,26 @@ def norm_digit(mask):
 
 
 def classify_mask(mask):
-    """(digit, score) by template match, or (None, inf) without templates."""
+    """(digit, score, margin-to-runner-up) by template match."""
     templates = _load_templates()
     if not templates:
-        return None, float("inf")
+        return None, float("inf"), 0.0
     x = norm_digit(mask)
-    scores = {d: float(np.abs(x - t).mean()) for d, t in templates.items()}
-    best = min(scores, key=scores.get)
-    return best, scores[best]
+    ranked = sorted(((float(np.abs(x - t).mean()), d) for d, t in templates.items()))
+    margin = ranked[1][0] - ranked[0][0] if len(ranked) > 1 else float("inf")
+    return ranked[0][1], ranked[0][0], margin
 
 
 def recognize_mask(mask):
-    """Template match first, tesseract as fallback, '?' if neither."""
-    digit, score = classify_mask(mask)
-    if digit is not None and score <= MATCH_THRESHOLD:
-        return digit
+    """Template match first, tesseract as fallback, '?' if neither.
+    A known font matches tightly; an unfamiliar font is accepted when one
+    digit still wins clearly over the runner-up."""
+    digit, score, margin = classify_mask(mask)
+    if digit is not None:
+        if score <= MATCH_THRESHOLD:
+            return digit
+        if score <= 0.45 and margin >= 0.08:
+            return digit
     return ocr_mask(mask)
 
 

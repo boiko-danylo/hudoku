@@ -152,7 +152,8 @@ def debug_view(frame, gray, quads, mode):
 def overlay(frame, gray, quads, worker, history=None):
     for gi, quad in enumerate(quads):
         cv2.polylines(frame, [quad.astype(int)], True, GREEN, 2)
-        cx, cy = quad.mean(axis=0).astype(int)
+        cx, cy = quad.min(axis=0).astype(int)   # label above the corner, off the digits
+        cy = max(cy - 10, 20)
         label = f"#{gi + 1}"
         with worker.lock:
             line = worker.results.get(gi)
@@ -178,8 +179,8 @@ def overlay(frame, gray, quads, worker, history=None):
                     x, y = centers[k].astype(int)
                     cv2.circle(frame, (x, y), 4, YELLOW, -1)
             label += f"  {sum(filled)} filled"
-        cv2.putText(frame, label, (cx - 40, cy),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, GREEN, 2)
+        cv2.putText(frame, label, (cx, cy),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, GREEN, 2)
     return frame
 
 

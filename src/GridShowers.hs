@@ -1,24 +1,14 @@
 module GridShowers where
 
-import Board
 import Grid
 import Text.PrettyPrint.Boxes
+import Variant
 import Prelude hiding ((<>))
 
--- vDiv :: Int -> B.Box
--- vDiv n = vcat left (replicate n (char '|'))
-
--- hDiv :: Int -> B.Box
--- hDiv n = hcat left (replicate n (char '-'))
-
-showGridPV :: Board -> Grid -> String
-showGridPV board grid = render $ foldl (//) nullBox rows
+-- | Render a grid with candidates, shaped by the variant's layout.
+showGridPV :: Variant -> Grid -> String
+showGridPV v grid = render $ foldl (//) nullBox rowBoxes
   where
-    rows = map row [1 .. (boardSize board !! 1)]
-    row y = foldl (<>) nullBox (cells y)
-    cells y = map (cell y) [1 .. head (boardSize board)]
-    cell x y = text $ showCellData (cell' x y)
-    cell' x y = posToCell board grid (Position [x, y])
-
--- map () 1..x -- each row
--- map () 1..y --
+    Layout2D w h = variantLayout v
+    rowBoxes = [rowBox y | y <- [0 .. h - 1]]
+    rowBox y = foldl (<>) nullBox [text (showCellData (grid !! (y * w + x))) | x <- [0 .. w - 1]]

@@ -1,7 +1,7 @@
 # ADR-0003: Groups carry a constraint kind (all-different first)
 
 Date: 2026-06-11
-Status: Accepted (only AllDifferent implemented for now)
+Status: Implemented (2026-06-11, shape in ADR-0007; AllDifferent only)
 
 ## Context
 

@@ -1,33 +1,28 @@
 module ClassicBoard where
 
-import Grid
 import Board
-import Data.List
+import qualified Data.IntSet as IntSet
+import Grid
+import Variant
 
-classicBoard = Board 2 9 classicGroups classicPositions
+-- Geometry is construction scaffolding (ADR-0007): rows, columns and
+-- boxes are computed from (x, y) coordinates, converted to indexes, and
+-- the coordinates are discarded.
+classicBoard :: Board
+classicBoard =
+  Board
+    { boardSize = 9,
+      boardCellCount = 81,
+      boardGroups = map (Group AllDifferent . IntSet.fromList) (rows ++ cols ++ boxes)
+    }
+  where
+    idx x y = (y - 1) * 9 + (x - 1)
+    rows = [[idx x y | x <- [1 .. 9]] | y <- [1 .. 9]]
+    cols = [[idx x y | y <- [1 .. 9]] | x <- [1 .. 9]]
+    boxes = [[idx (bx + dx) (by + dy) | dy <- [1 .. 3], dx <- [1 .. 3]] | by <- [0, 3, 6], bx <- [0, 3, 6]]
+
+classicVariant :: Variant
+classicVariant = Variant classicBoard (Layout2D 9 9)
 
 readClassicGrid :: String -> Maybe Grid
 readClassicGrid = readGridFor classicBoard
-
-classicGroups :: [Group]
-classicGroups = row_groups ++ col_groups ++ square_groups
-  where
-    row_groups = map (\y -> map (\x -> Position [x, y]) [1..9]) [1..9]
-    col_groups = map (\x -> map (\y -> Position [x, y]) [1..9]) [1..9]
-    square_groups = map square_group [1..9]
-    square_group n = map (\c -> Position [square_x n c, square_y n c]) [1..9]
-    square_col n = if mod n 3 > 0 then mod n 3 else 3
-    square_row n = div (n + 2) 3
-    square_x n c
-      | mod c 3 > 0 = (square_col n - 1) * 3 + mod c 3
-      | otherwise   = square_col n * 3
-    square_y n c = (square_row n - 1) * 3 + div (c + 2) 3
-
-
-classicPositions::PositionList
-classicPositions= sortBy (\(a, _) (b, _)-> compare a b) grid
-  where
-    grid = concatMap row [1..9]
-    row n = map (`item` n) [1..9]
-    item x y = (num x y, Position [x,y])
-    num x y = ((y - 1) * 9) + x

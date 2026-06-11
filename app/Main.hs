@@ -27,5 +27,5 @@ main = do
   let (outcome, grid, journal) = runSolver standardTechniques classicBoard harderGrid
   putStrLn ("Outcome: " ++ show outcome)
   putStrLn ("Steps:   " ++ show (length journal))
-  putStrLn (showGridPV classicBoard grid)
+  putStrLn (showGridPV classicVariant grid)
   exitSuccess

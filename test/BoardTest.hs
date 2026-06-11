@@ -2,7 +2,7 @@ module BoardTest (tests) where
 
 import Board
 import ClassicBoard
-import Data.IntSet (empty, fromList)
+import Data.IntSet (empty, fromList, size)
 import Grid
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -17,10 +17,11 @@ tests =
       readGridForTests
     ]
 
-showClassicBoardTest = testCase "Show classic board test" $ assertEqual "" expected actual
-  where
-    expected = "Dim: 2, Size: 9, Groups: 27"
-    actual = show classicBoard
+showClassicBoardTest = testCase "Classic board structure" $ do
+  boardSize classicBoard @?= 9
+  boardCellCount classicBoard @?= 81
+  length (boardGroups classicBoard) @?= 27
+  map (size . groupCells) (boardGroups classicBoard) @?= replicate 27 9
 
 getPossibleValuesTestGroup = testGroup "getPossibleValues test group" [getPossibleValuesTestPv, getPossibleValuesTestValue]
 
@@ -54,6 +55,9 @@ readGridForTests =
           @?= Just [CellValue 1, open, CellValue 3, open, CellValue 5],
       testCase "Invalid character fails the whole parse" $
         readGridFor testBoard1d "1x..."
+          @?= Nothing,
+      testCase "Wrong length fails the parse (ADR-0007)" $
+        readGridFor testBoard1d "...."
           @?= Nothing
     ]
   where

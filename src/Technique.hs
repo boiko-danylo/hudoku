@@ -34,7 +34,7 @@ type Technique = Board -> Grid -> [Finding]
 
 -- The group-scanning technique family: plug in a group handler, get a Technique
 onGroups :: ([CellInfo] -> [Finding]) -> Technique
-onGroups f board grid = concatMap (f . groupToCellInfo board grid) (boardGroups board)
+onGroups f board grid = concatMap (f . cellsOf grid) (boardGroups board)
 
 -- | All value-sets of size n drawn from the open cells' candidates.
 --   Shared by the subset technique family (naked and hidden).

@@ -1,6 +1,6 @@
 module Techniques.NakedSubsetsTest (tests) where
 
-import Board (CellInfo, GridIndex, Position (..), boardGridLength, boardValues)
+import Board (CellInfo, GridIndex, boardCellCount, boardValues)
 import ClassicBoard (classicBoard)
 import qualified Data.IntSet as IntSet
 import Grid
@@ -16,15 +16,14 @@ pv = PossibleValues . IntSet.fromList
 cands :: [Value] -> Candidates
 cands = IntSet.fromList
 
--- A CellInfo whose position doesn't matter (piecewise tests never look at it)
 ci :: GridIndex -> Cell -> CellInfo
-ci i c = (Position [i], i, c)
+ci i c = (i, c)
 
 -- Pad a row prefix out to a full classic grid with open cells
 classicGridOf :: [Cell] -> Grid
 classicGridOf cells = take len (cells ++ replicate len openCell)
   where
-    len = boardGridLength classicBoard
+    len = boardCellCount classicBoard
 
 openCell :: Cell
 openCell = PossibleValues (boardValues classicBoard)

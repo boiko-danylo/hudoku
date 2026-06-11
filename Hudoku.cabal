@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 099a191a09d20815985a62dee6ac87e3243ad76715318f704dc9328a1f15e3a4
+-- hash: 4d47cdddc454bde35844cc981a4afb9b2fb979ec529d457ef3bba908133a16b7
 
 name:           Hudoku
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       Techniques.NakedSingles
       Techniques.NakedSubsets
       Techniques.PeerElimination
+      Variant
   other-modules:
       Paths_Hudoku
   hs-source-dirs:

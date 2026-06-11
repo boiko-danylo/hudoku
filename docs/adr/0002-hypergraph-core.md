@@ -1,7 +1,7 @@
 # ADR-0002: Board core is a hypergraph; geometry lives at the edges
 
 Date: 2026-06-11
-Status: Accepted (implementation deferred — owner studying the topic)
+Status: Implemented (2026-06-11, shape in ADR-0007)
 
 ## Context
 

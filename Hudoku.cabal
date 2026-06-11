@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.37.0.
+-- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b5d0dce940fe5076f8a3f0835004881c577c57f71357a0aa1ea45080a67ab46
+-- hash: d828c789df8e26cb16f2bb27049c1285af2c68e1dc36bfab648706d2a10baa59
 
 name:           Hudoku
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       Grid
       GridShowers
       Steps
+      Technique
   other-modules:
       Paths_Hudoku
   hs-source-dirs:
@@ -81,6 +82,7 @@ test-suite test
       GridTest
       Missions.Classic.Hard
       Steps
+      TechniqueTest
       TestBoard1d
       Paths_Hudoku
   hs-source-dirs:

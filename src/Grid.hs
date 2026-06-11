@@ -5,7 +5,13 @@ import Data.IntSet (IntSet, difference, findMin, member, size)
 import Data.Maybe
 import Prelude
 
-type CellPossibleValues = IntSet
+-- Semantic types (ADR-0005)
+type Value = Int
+
+type Candidates = IntSet
+
+-- Deprecated alias, migrate to Candidates
+type CellPossibleValues = Candidates
 
 data Cell = CellValue Int | EmptyCellVallue | PossibleValues CellPossibleValues deriving (Eq)
 

@@ -5,6 +5,7 @@ import ClassicBoard
 import Data.Maybe (fromJust)
 import qualified GridShowersTest
 import qualified GridTest
+import qualified Hodoku.ReglibTest
 import Solver
 import qualified SolverTest
 import qualified TechniqueTest
@@ -17,12 +18,14 @@ import Test.Tasty.HUnit
 
 main = do
   corpus <- CorpusTest.corpusTests
-  defaultMain (tests corpus)
+  reglib <- Hodoku.ReglibTest.reglibTests
+  defaultMain (tests corpus reglib)
 
-tests corpus =
+tests corpus reglib =
   testGroup
     "All tests"
     [ corpus,
+      reglib,
       endToEndTests,
       BoardTest.tests,
       CheckerTest.tests,

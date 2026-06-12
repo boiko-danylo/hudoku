@@ -54,3 +54,4 @@ tests:
       - tasty-hunit
       - directory
       - filepath
+      - megaparsec

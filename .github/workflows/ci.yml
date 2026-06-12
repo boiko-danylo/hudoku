@@ -23,5 +23,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-stack-
 
+      - name: Fetch test fixtures
+        run: ./corpus/fetch-fixtures.sh
+
       - name: Build and test
         run: stack test --no-terminal

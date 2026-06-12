@@ -10,6 +10,7 @@ import Solver
 import qualified SolverTest
 import qualified TechniqueTest
 import qualified Techniques.HiddenSubsetsTest
+import qualified Techniques.LockedCandidatesTest
 import qualified Techniques.NakedSinglesTest
 import qualified Techniques.NakedSubsetsTest
 import qualified Techniques.PeerEliminationTest
@@ -34,6 +35,7 @@ tests corpus reglib =
       TechniqueTest.tests,
       Techniques.NakedSubsetsTest.tests,
       Techniques.HiddenSubsetsTest.tests,
+      Techniques.LockedCandidatesTest.tests,
       Techniques.NakedSinglesTest.tests,
       Techniques.PeerEliminationTest.tests,
       SolverTest.tests

@@ -15,6 +15,7 @@ import Hodoku.Reglib
 import System.Directory (doesFileExist)
 import Technique
 import Techniques.HiddenSubsets
+import Techniques.LockedCandidates
 import Techniques.NakedSingles
 import Techniques.NakedSubsets
 import Test.Tasty
@@ -31,6 +32,8 @@ techniqueFor code = case code of
   "0000" -> Just nakedSingles -- Full House: one open cell left in a group
   "0003" -> Just nakedSingles
   "0002" -> Just hiddenSingles
+  "0100" -> Just lockedCandidates -- pointing and claiming are one rule
+  "0101" -> Just lockedCandidates
   "0200" -> Just (nakedSubsets 2)
   "0201" -> Just (nakedSubsets 3)
   "0202" -> Just (nakedSubsets 4)

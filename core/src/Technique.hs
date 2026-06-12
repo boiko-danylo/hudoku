@@ -14,6 +14,7 @@ data TechniqueId
   | NakedSingle
   | NakedSubset SubsetSize
   | HiddenSubset SubsetSize
+  | LockedCandidates
   deriving (Show, Eq)
 
 -- An instruction against the *current* grid (ADR-0006)

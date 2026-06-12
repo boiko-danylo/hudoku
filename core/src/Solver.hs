@@ -6,6 +6,7 @@ import Data.Maybe (listToMaybe)
 import Grid
 import Technique
 import Techniques.HiddenSubsets
+import Techniques.LockedCandidates
 import Techniques.NakedSingles
 import Techniques.NakedSubsets
 import Techniques.PeerElimination
@@ -46,6 +47,7 @@ standardTechniques =
   [ peerElimination,
     nakedSingles,
     hiddenSingles,
+    lockedCandidates,
     nakedSubsets 2,
     hiddenSubsets 2,
     nakedSubsets 3,

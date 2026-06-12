@@ -46,7 +46,7 @@
   "source": "magazine p.40",
   "difficulty": "extra-hard",
   "puzzle": "......4..2..4...9.....6...854..2..1.16..4..5.8.7.1........859......3.6.5..6..9...",
-  "expect": "stuck"
+  "expect": "solved"
  },
  {
   "id": "204",

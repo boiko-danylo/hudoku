@@ -1,23 +1,13 @@
-name:                Hudoku
+name:                hudoku-core
 version:             0.1.0.0
-github:              "5n00p4eg/hudoku"
+github:              "boiko-danylo/hudoku"
 license:             BSD3
 author:              "Daniil Boiko"
 maintainer:          "5n00p4eg@gmail.com"
 copyright:           "2021 Daniil Boiko"
 
-extra-source-files:
-- README.md
-- ChangeLog.md
-
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-# description:         Please see the README on GitHub at <https://github.com/githubuser/simple#readme>
+synopsis:            Structure-based sudoku solver core
+description:         See DESIGN.md at the repository root.
 
 default-extensions:
 - OverloadedStrings
@@ -45,7 +35,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
       - boxes
-      - Hudoku
+      - hudoku-core
       - extra
 
 tests:
@@ -57,7 +47,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-      - Hudoku
+      - hudoku-core
       - boxes
       - HUnit
       - tasty

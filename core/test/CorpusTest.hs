@@ -28,7 +28,8 @@ instance FromJSON Mission where
 
 corpusTests :: IO TestTree
 corpusTests = do
-  decoded <- eitherDecode <$> B.readFile "corpus/magazine.json"
+  -- tests run with cwd = core/; the corpus lives at the repo root
+  decoded <- eitherDecode <$> B.readFile "../corpus/magazine.json"
   pure $ case decoded of
     Left err -> testCase "corpus parses" (assertFailure err)
     Right missions -> testGroup "Corpus (magazine)" (map missionTest missions)

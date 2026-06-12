@@ -1,13 +1,10 @@
 cradle:
-  cabal:
-    - path: "src"
-      component: "lib:Hudoku"
+  stack:
+    - path: "core/src"
+      component: "hudoku-core:lib"
 
-    - path: "app/Main.hs"
-      component: "Hudoku:exe:exe"
+    - path: "core/app/Main.hs"
+      component: "hudoku-core:exe:exe"
 
-    - path: "app/Paths_Hudoku.hs"
-      component: "Hudoku:exe:exe"
-
-    - path: "test"
-      component: "Hudoku:test:test"
+    - path: "core/test"
+      component: "hudoku-core:test:test"

@@ -2,7 +2,7 @@
 -- stdin ("<id> <81 chars>" or bare "<81 chars>"), validates the givens,
 -- solves with standardTechniques and reports outcome + contradiction signs.
 --
---   python3 tools/grid-ocr.py page.heic --rotate 270 | stack runghc tools/verify.hs
+--   python3 ocr/grid-ocr.py page.heic --rotate 270 | stack runghc corpus/verify.hs
 import Board
 import Checker
 import ClassicBoard

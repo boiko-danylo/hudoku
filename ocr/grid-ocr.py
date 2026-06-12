@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extract sudoku grids from a photographed puzzle page.
 
-Usage: python3 tools/grid-ocr.py IMAGE [--rotate 270] [--strips DIR]
+Usage: python3 ocr/grid-ocr.py IMAGE [--rotate 270] [--strips DIR]
 
 Finds every grid-sized quadrilateral on the page, flattens it, splits it
 into 9x9 cells and OCRs each cell with Tesseract. Prints one 81-character
@@ -10,7 +10,7 @@ order, plus an ASCII rendering on stderr for eyeballing.
 
 Tesseract is unreliable on newsprint; --strips writes annotated 3-row
 band PNGs per grid, which are the ground truth for manual reading.
-Verify transcriptions with: stack runghc tools/verify.hs
+Verify transcriptions with: stack runghc corpus/verify.hs
 """
 
 import argparse

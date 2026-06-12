@@ -52,6 +52,12 @@ inside techniques.
 - **ADR-0007** — Hypergraph implementation shape: `Group` = constraint +
   `IntSet`, `Board` record, `CellInfo = (GridIndex, Cell)`, geometry in the
   `Variant` layer (`Board` + `Layout`), `Position` deleted.
+- **ADR-0008** — Monorepo layout and subproject roadmap: `core/`, `ocr/`,
+  root-level `corpus/`; planned `protocol`/`libhudoku`/`wasm`/`cli`/`api`/
+  `spa`/`gui`/`ios`. One protocol, three artifacts (C ABI, wasm, HTTP).
+- **ADR-0009** — Build orchestration: Nix, staged — pinned dev shells
+  first, hermetic artifact builds later; native toolchains do the inner
+  builds.
 
 ## Open questions
 
@@ -65,7 +71,11 @@ inside techniques.
   rules metadata and richer layouts (3D, irregular) join when a UI or a
   non-classic variant demands them.
 
-## Current state (2026-06, post-migration)
+## Current state (2026-06, post-migration, monorepo)
+
+- The repo is a monorepo (ADR-0008): the Haskell package lives in
+  `core/` (renamed `hudoku-core`), the OCR pipeline in `ocr/`, and the
+  shared ground-truth `corpus/` at the root with its `verify.hs`.
 
 - The ADR-0001 pipeline is live end to end: `Technique → [Finding] →
   Solver (RWS) → journal`. `runSolver standardTechniques` solves real
@@ -94,6 +104,7 @@ inside techniques.
 - Description renderer for Findings (UI layer) not started.
 - `corpus/` is the live puzzle corpus + progress tracker (CorpusTest solves
   every entry; expectations recorded per puzzle — flip "stuck" to "solved"
-  when new techniques land). Ingestion: `tools/grid-ocr.py` (photo -> grids)
-  + `tools/verify.hs` (transcription check). `test/Missions/` + `hard.json`:
-  older dormant sudoku.com data, fold into corpus/ someday.
+  when new techniques land). Ingestion: `ocr/grid-ocr.py` (photo -> grids)
+  + `corpus/verify.hs` (transcription check). `core/test/Missions/` +
+  root `hard.json`/`getLevel.sh`: older dormant sudoku.com data, fold into
+  corpus/ someday.

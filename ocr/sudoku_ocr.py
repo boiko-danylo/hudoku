@@ -123,7 +123,7 @@ def cell_mask(thr, r, c):
 
 
 # Digit templates harvested from corpus-verified magazine pages
-# (tools/digit-templates.npz, 48x48 mean masks per digit). Template match
+# (ocr/digit-templates.npz, 48x48 mean masks per digit). Template match
 # is the primary recognizer: 321/321 leave-one-out on the corpus, while
 # tesseract scored 0/321 on the same masks. Tesseract remains the
 # fallback for fonts the templates don't cover.

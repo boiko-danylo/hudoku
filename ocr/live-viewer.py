@@ -2,9 +2,9 @@
 """Live sudoku-recognition viewer: point a webcam at a puzzle page and
 verify what the pipeline sees.
 
-  python3 tools/live-viewer.py                 # webcam
-  python3 tools/live-viewer.py --camera 1      # another camera
-  python3 tools/live-viewer.py --image x.heic [--rotate 270]   # still photo
+  python3 ocr/live-viewer.py                 # webcam
+  python3 ocr/live-viewer.py --camera 1      # another camera
+  python3 ocr/live-viewer.py --image x.heic [--rotate 270]   # still photo
 
 Overlay, every frame (fast, pure OpenCV):
   - green outline around every detected grid, with its index

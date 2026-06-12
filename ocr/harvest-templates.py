@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Harvest digit templates from corpus-verified puzzle photos.
 
-  python3 tools/harvest-templates.py --tag mag1 --rotate 270 \
+  python3 ocr/harvest-templates.py --tag mag1 --rotate 270 \
       /path/page1.heic:197-202 /path/page2.heic:203-208
 
 Each argument is PHOTO:IDS where IDS select corpus entries (a-b range or
 comma list). Detected grids are matched to corpus puzzles by their
 filled-cell pattern; every given digit becomes a labeled sample. Mean
-templates per digit are stored in tools/digit-templates.npz under keys
+templates per digit are stored in ocr/digit-templates.npz under keys
 'digit:tag' - existing tags other than --tag are preserved, so each
 publication's font is one harvest run.
 """

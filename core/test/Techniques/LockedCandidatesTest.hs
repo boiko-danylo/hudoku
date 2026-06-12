@@ -9,8 +9,8 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 -- The geometry-freeness proof: no rows, no boxes, no 9x9 anywhere.
--- Five cells, domain {1,2,3}; A = {0,1,2} spans the domain (so every
--- value must appear in it), B = {1,2,3,4} merely all-different.
+-- Five cells, domain {1,2,3}; A = {0,1,2} declares Permutation (every
+-- value must appear in it), B = {1,2,3,4} is merely all-different.
 -- A ∩ B = {1,2}.
 tinyBoard :: Board
 tinyBoard =
@@ -18,7 +18,7 @@ tinyBoard =
     { boardSize = 3,
       boardCellCount = 5,
       boardGroups =
-        [ Group AllDifferent (IntSet.fromList [0, 1, 2]),
+        [ Group Permutation (IntSet.fromList [0, 1, 2]),
           Group AllDifferent (IntSet.fromList [1, 2, 3, 4])
         ]
     }
@@ -40,10 +40,10 @@ tests =
                   Eliminate 4 (IntSet.singleton 1)
                 ]
               ],
-      testCase "B never proves: it does not span the domain" $ do
+      testCase "B never proves: it is not Permutation-strong" $ do
         -- mirror setup: 1 confined to {1,2} from B's side (impossible in
-        -- 3 and 4). B has 4 cells over a 3-value domain, so nothing
-        -- forces 1 to appear in B at all - no inference, no findings.
+        -- 3 and 4). B only declares AllDifferent, so nothing forces 1 to
+        -- appear in B at all - no inference, no findings.
         let grid = [open [1, 2, 3], open [1, 2, 3], open [1, 2, 3], open [2, 3], open [2, 3]]
         lockedCandidates tinyBoard grid @?= [],
       testCase "untouched grid has no locked candidates" $ do

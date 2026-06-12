@@ -58,6 +58,10 @@ inside techniques.
 - **ADR-0009** — Build orchestration: Nix, staged — pinned dev shells
   first, hermetic artifact builds later; native toolchains do the inner
   builds.
+- **ADR-0010** — Constraint strength: `AllDifferent` vs `Permutation`
+  with entailment; premise checks carried as evidence types
+  (`PermutationGroup`, "parse don't validate"); `TechniqueDef` catalog +
+  `applicable` answer "which techniques fit this board".
 
 ## Open questions
 

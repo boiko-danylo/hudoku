@@ -22,7 +22,7 @@ showClassicBoardTest = testCase "Classic board structure" $ do
   boardCellCount classicBoard @?= 81
   length (boardGroups classicBoard) @?= 27
   map (size . groupCells) (boardGroups classicBoard) @?= replicate 27 9
-  map groupConstraint (boardGroups classicBoard) @?= replicate 27 AllDifferent
+  map groupConstraint (boardGroups classicBoard) @?= replicate 27 Permutation
   boardValues testBoard1d @?= fromList [1 .. 5]
 
 getPossibleValuesTestGroup = testGroup "getPossibleValues test group" [getPossibleValuesTestPv, getPossibleValuesTestValue]

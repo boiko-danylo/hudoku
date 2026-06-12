@@ -37,21 +37,33 @@ solveWith techniques = do
 firstFinding :: [Technique] -> Board -> Grid -> Maybe Finding
 firstFinding ts board grid = listToMaybe (concatMap (\t -> t board grid) ts)
 
--- | Unwrap the machine: final verdict, final grid, the journal.
-runSolver :: [Technique] -> Board -> Grid -> (Outcome, Grid, [Step])
-runSolver techniques = runRWS (solveWith techniques)
+-- | The engine-level runner: run exactly these techniques.
+runSolverWith :: [Technique] -> Board -> Grid -> (Outcome, Grid, [Step])
+runSolverWith techniques = runRWS (solveWith techniques)
+
+-- | The catalog-level runner: select what fits the board, then run.
+runSolver :: [TechniqueDef] -> Board -> Grid -> (Outcome, Grid, [Step])
+runSolver defs board = runSolverWith (map techRun (applicable board defs)) board
+
+-- | Which techniques fit this board: every premise must be met by some
+--   group (ADR-0010). Advertisement only — soundness lives in the
+--   techniques themselves, which select qualifying groups per group.
+applicable :: Board -> [TechniqueDef] -> [TechniqueDef]
+applicable board = filter (all supported . techNeeds)
+  where
+    supported need = any ((`implies` need) . groupConstraint) (boardGroups board)
 
 -- | The default arsenal, cheapest first; the order is the difficulty scale.
-standardTechniques :: [Technique]
+standardTechniques :: [TechniqueDef]
 standardTechniques =
-  [ peerElimination,
-    nakedSingles,
-    hiddenSingles,
-    lockedCandidates,
-    nakedSubsets 2,
-    hiddenSubsets 2,
-    nakedSubsets 3,
-    hiddenSubsets 3,
-    nakedSubsets 4,
-    hiddenSubsets 4
+  [ TechniqueDef PeerElimination [AllDifferent] peerElimination,
+    TechniqueDef NakedSingle [] nakedSingles,
+    TechniqueDef (HiddenSubset 1) [Permutation] hiddenSingles,
+    TechniqueDef LockedCandidates [Permutation] lockedCandidates,
+    TechniqueDef (NakedSubset 2) [AllDifferent] (nakedSubsets 2),
+    TechniqueDef (HiddenSubset 2) [Permutation] (hiddenSubsets 2),
+    TechniqueDef (NakedSubset 3) [AllDifferent] (nakedSubsets 3),
+    TechniqueDef (HiddenSubset 3) [Permutation] (hiddenSubsets 3),
+    TechniqueDef (NakedSubset 4) [AllDifferent] (nakedSubsets 4),
+    TechniqueDef (HiddenSubset 4) [Permutation] (hiddenSubsets 4)
   ]

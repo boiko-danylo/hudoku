@@ -72,10 +72,10 @@ solveTests =
         show Solved @?= "Solved"
         show Stuck @?= "Stuck",
       testCase "Solved grid with no findings reports Solved, empty journal" $
-        runSolver [] classicBoard solvedGrid
+        runSolverWith [] classicBoard solvedGrid
           @?= (Solved, solvedGrid, []),
       testCase "Unsolvable-by-these-techniques grid reports Stuck" $ do
-        let (outcome, grid', journal) = runSolver [nakedSubsets 2] (lineBoard 9) size2Grid
+        let (outcome, grid', journal) = runSolverWith [nakedSubsets 2] (lineBoard 9) size2Grid
         outcome @?= Stuck
         grid' @?= size2Expected
         journal
@@ -86,7 +86,7 @@ solveTests =
               ],
       testCase "Applies one finding per scan and journals them in order" $ do
         let twoOpen = pv [1] : pv [2] : drop 2 solvedGrid
-            (outcome, grid', journal) = runSolver [nakedSingles] classicBoard twoOpen
+            (outcome, grid', journal) = runSolverWith [nakedSingles] classicBoard twoOpen
         outcome @?= Solved
         grid' @?= solvedGrid
         journal

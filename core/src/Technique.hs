@@ -33,9 +33,29 @@ data Finding = Finding
 
 type Technique = Board -> Grid -> [Finding]
 
--- The group-scanning technique family: plug in a group handler, get a Technique
+-- | A technique that can be asked about, not only run (ADR-0010):
+--   techNeeds states its premises so a driver (or a UI) can compute
+--   which techniques fit a board. Soundness does NOT rely on this —
+--   techniques select qualifying groups themselves.
+data TechniqueDef = TechniqueDef
+  { techId :: TechniqueId,
+    techNeeds :: [Constraint],
+    techRun :: Technique
+  }
+
+-- The group-scanning technique family: plug in a group handler, get a
+-- Technique over every group guaranteeing at least AllDifferent.
 onGroups :: ([CellInfo] -> [Finding]) -> Technique
-onGroups f board grid = concatMap (f . cellsOf grid) (boardGroups board)
+onGroups f board grid =
+  concatMap
+    (f . cellsOf grid)
+    [g | g <- boardGroups board, groupConstraint g `implies` AllDifferent]
+
+-- | Like onGroups, for techniques whose logic needs every value to
+--   appear in the group (ADR-0010): only Permutation-proven groups.
+onPermutationGroups :: ([CellInfo] -> [Finding]) -> Technique
+onPermutationGroups f board grid =
+  concatMap (f . cellsOf grid . permutationGroup) (permutationGroups board)
 
 -- | All value-sets of size n drawn from the open cells' candidates.
 --   Shared by the subset technique family (naked and hidden).

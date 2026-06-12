@@ -11,9 +11,8 @@ import Technique
 --   in I — so it is impossible in B \ I. No geometry: any two overlapping
 --   groups qualify, which is what makes this work on variants for free.
 --
---   The prover A must span the board's full domain (size == boardSize):
---   only then does AllDifferent force every value to appear in A at all.
---   The receiver B needs no such strength.
+--   The prover A must guarantee every value appears in it (Permutation,
+--   by evidence — ADR-0010). The receiver B needs no such strength.
 lockedCandidates :: Technique
 lockedCandidates board grid =
   [ Finding LockedCandidates updates (map cellInfoIndex homes)
@@ -31,14 +30,11 @@ lockedCandidates board grid =
       not (null updates)
   ]
   where
-    groups = boardGroups board
-    fullDomain g = IntSet.size (groupCells g) == boardSize board
     orderedPairs =
-      [ (a, b)
-        | a <- groups,
-          fullDomain a,
-          b <- groups,
-          groupCells a /= groupCells b
+      [ (permutationGroup pa, b)
+        | pa <- permutationGroups board,
+          b <- boardGroups board,
+          groupCells (permutationGroup pa) /= groupCells b
       ]
     cellsAt ix = map (\i -> (i, grid !! i)) (IntSet.toAscList ix)
     openCellsOf g = filter (isPossibleValues . cellInfoCell) (cellsOf grid g)

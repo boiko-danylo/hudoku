@@ -8,8 +8,9 @@ import Technique
 
 -- | All hidden subsets of size n: a value-set s whose open homes number
 --   exactly n means those cells can hold nothing but s -> shrink them to s.
+--   Sound only where every value must appear, hence Permutation groups.
 hiddenSubsets :: SubsetSize -> Technique
-hiddenSubsets n = onGroups (hiddenInGroup n)
+hiddenSubsets n = onPermutationGroups (hiddenInGroup n)
 
 -- | A hidden single is a hidden subset of size 1.
 hiddenSingles :: Technique

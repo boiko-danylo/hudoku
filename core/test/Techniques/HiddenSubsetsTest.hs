@@ -4,7 +4,7 @@ import ClassicBoard (classicBoard, readClassicGrid)
 import Data.Maybe (fromJust)
 import qualified Data.IntSet as IntSet
 import Grid
-import Solver (runSolver)
+import Solver (runSolverWith)
 import Technique
 import Techniques.HiddenSubsets
 import Techniques.NakedSingles (nakedSingles)
@@ -62,7 +62,7 @@ tests =
         applied !! 62 @?= pv [1, 9],
       testCase "Hidden singles place values via the solver (ported updateUniqueValues scenario)" $ do
         let start = [pv [1, 3, 5], pv [1, 3], pv [1, 4], pv [1, 2], pv [1, 5]]
-            (_, grid', journal) = runSolver [hiddenSingles, nakedSingles] testBoard1d start
+            (_, grid', journal) = runSolverWith [hiddenSingles, nakedSingles] testBoard1d start
         grid' @?= [pv [1, 3, 5], pv [1, 3], CellValue 4, CellValue 2, pv [1, 5]]
         -- the alias reports itself honestly: a hidden single is HiddenSubset 1
         findingTechnique (head journal) @?= HiddenSubset 1

@@ -13,7 +13,8 @@ classicBoard =
   Board
     { boardSize = 9,
       boardCellCount = 81,
-      boardGroups = map (Group AllDifferent . IntSet.fromList) (rows ++ cols ++ boxes)
+      -- 9 cells over 9 values: all-different forces every value in
+      boardGroups = map (Group Permutation . IntSet.fromList) (rows ++ cols ++ boxes)
     }
   where
     idx x y = (y - 1) * 9 + (x - 1)

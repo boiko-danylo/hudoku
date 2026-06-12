@@ -1,4 +1,24 @@
-module Board where
+module Board
+  ( Size,
+    GridIndex,
+    Constraint (..),
+    implies,
+    Group (..),
+    Board (..),
+    boardValues,
+    PermutationGroup, -- abstract on purpose: permutationGroups is the only constructor
+    permutationGroup,
+    permutationGroups,
+    CellInfo,
+    cellInfoIndex,
+    cellInfoCell,
+    cellsOf,
+    readGridFor,
+    getPossibleValues,
+    groupSolved,
+    gridSolved,
+  )
+where
 
 import Data.Char (digitToInt, isDigit)
 import Data.IntSet (IntSet)
@@ -15,9 +35,19 @@ type Size = Int
 
 type GridIndex = Int
 
--- ADR-0003: what a group demands of its cells
-data Constraint = AllDifferent
+-- ADR-0003/0010: what a group demands of its cells, by strength.
+data Constraint
+  = -- | no two cells hold the same value
+    AllDifferent
+  | -- | AllDifferent AND every domain value appears (a full sudoku group:
+    --   as many cells as values, so the pigeonhole forces all of them in)
+    Permutation
   deriving (Show, Eq)
+
+-- | Entailment: a group satisfying c also satisfies c' (ADR-0010).
+implies :: Constraint -> Constraint -> Bool
+implies Permutation AllDifferent = True
+implies c c' = c == c'
 
 data Group = Group
   { groupConstraint :: Constraint,
@@ -34,6 +64,19 @@ data Board = Board
 
 boardValues :: Board -> Candidates
 boardValues board = IntSet.fromList (range (1, boardSize board))
+
+-- | Evidence that a group's constraint implies Permutation (ADR-0010).
+--   The constructor is not exported: holding one of these proves the
+--   check happened, so technique signatures can demand the premise.
+newtype PermutationGroup = PermutationGroup Group
+
+permutationGroup :: PermutationGroup -> Group
+permutationGroup (PermutationGroup g) = g
+
+-- | The only way to obtain evidence: the runtime check, exactly once.
+permutationGroups :: Board -> [PermutationGroup]
+permutationGroups b =
+  [PermutationGroup g | g <- boardGroups b, groupConstraint g `implies` Permutation]
 
 type CellInfo = (GridIndex, Cell)
 

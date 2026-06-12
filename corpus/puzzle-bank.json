@@ -1,0 +1,194 @@
+[
+ {
+  "id": "pb-000018",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "easy",
+  "rating": 1.2,
+  "puzzle": ".5.7.3.6...7...8.....816.......3......5...1..73..4..869.6...2.484.572.93...4.9...",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-335f51",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "easy",
+  "rating": 1.2,
+  "puzzle": ".3...249.7..3.6.15.5...47.......9...9.5...1.6...6.......34...7.24.5.8..1.712...5.",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-66e55b",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "easy",
+  "rating": 1.2,
+  "puzzle": "..4..3.9..71.......2.1..5..5..7...31..9...6..21...4..5..7..9.5.......32..9.3..4..",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-99f4a0",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "easy",
+  "rating": 1.2,
+  "puzzle": "....2..6.6.894......48.517...1...79.83.....15.72...6...964.32......529.7.8..1....",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-cce878",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "easy",
+  "rating": 1.2,
+  "puzzle": ".31..9.....7...2.56...7......8....6.9.64.27.3.7....4......8...64.2...5.....2..91.",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-ffffd7",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "easy",
+  "rating": 1.2,
+  "puzzle": ".........1.72.56.9.54...87.5...6...2.41...35.9...4...63.......4.95.2.76..18...92.",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-00031b",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "medium",
+  "rating": 1.5,
+  "puzzle": "..28.61......9....3.......7..3...2..6..7.4..882.....45....1....14..8..63.3..5..8.",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-cbafe2",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "medium",
+  "rating": 1.5,
+  "puzzle": ".....29..5..96.4..7..4.8.5.46....1....9.3.7....5....24.5.6.1..7..3.85..9..73.....",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-97fd71",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "medium",
+  "rating": 1.7,
+  "puzzle": "....43....1.9...4.57...6..11......8...53.96...6......93..6...17.9...1.5....23....",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-661b2a",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "medium",
+  "rating": 2.0,
+  "puzzle": "3......5..2534.....7.52...1...9..8...9.637.4...7..5...7...53.9.....9213..1......5",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-325722",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "medium",
+  "rating": 2.3,
+  "puzzle": ".721....6...8.....3.4.....8.8...7.4.1.......5.3.2...6.4.....3.9.....8...7....941.",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-ffff9b",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "medium",
+  "rating": 2.3,
+  "puzzle": ".7.........41..3.2...679.4.2..4....99.......14....6..7.5.821...1.8..42.........1.",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-000694",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "hard",
+  "rating": 2.5,
+  "puzzle": "57..6...3.3...5.6.6.1..7....53.....1....8....9.....27....8..4.2.8.1...3.2...4..19",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-68797f",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "hard",
+  "rating": 2.8,
+  "puzzle": "56.....27...........2.6.9...3.517.9...1.4.3..9...3...4...854....8.....3.1.7...4.2",
+  "expect": "solved"
+ },
+ {
+  "id": "pb-fb3dc6",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "hard",
+  "rating": 3.2,
+  "puzzle": ".......3.1.26..4...8341.26....8.152...4.5.8...182.6....51.6439...9..26.1.2.......",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-1f13b8",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "hard",
+  "rating": 4.1,
+  "puzzle": "..7..5.6.5..4....361..9.4.....8.27...4.....2...29.4.....4.8..962....9..7.3.7..1..",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-b2f598",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "hard",
+  "rating": 4.3,
+  "puzzle": ".8935...6...8...7.....4...97..2..9..8.......2..4..8..73...9.....7...3...9...6531.",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-f2f8f4",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "hard",
+  "rating": 4.8,
+  "puzzle": "8..6..........9.6..95183.......3..78.83...12.27..1.......72543..4.3..........8..1",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-009d72",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "diabolical",
+  "rating": 5.0,
+  "puzzle": ".4.....9.....5....8.6...4.7....8......5.2.7....21659....76.35..6.9.7.3.2.........",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-d72eff",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "diabolical",
+  "rating": 5.7,
+  "puzzle": "..8...2.....1.3...194...538....1......2.4.9...85...32...6...1.....294....2.6.1.8.",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-d172d7",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "diabolical",
+  "rating": 6.7,
+  "puzzle": "..5.3..4.3672....1...8....3.5...9.1.2...8...7.7.1...3.7....8...6....5974.9..1.3..",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-a43ed5",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "diabolical",
+  "rating": 7.1,
+  "puzzle": ".....1..92....715..39.4.7.......3...6.3...4.1...8.......1.9.86..584....79..3.....",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-f30045",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "diabolical",
+  "rating": 7.8,
+  "puzzle": ".....2....68..721...3.5..6.13....4......8......7....39.8..9.3...253..18....1.....",
+  "expect": "stuck"
+ },
+ {
+  "id": "pb-ae59bc",
+  "source": "sudoku-exchange-puzzle-bank (public domain)",
+  "difficulty": "diabolical",
+  "rating": 9.3,
+  "puzzle": ".5.9.86..8....6..7..6.2......9....7.2.3...8.9.1....4......3.7..9..8....4..56.4.3.",
+  "expect": "stuck"
+ }
+]

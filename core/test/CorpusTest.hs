@@ -5,8 +5,11 @@ import ClassicBoard
 import Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import qualified Data.IntSet as IntSet
+import Data.List (isSuffixOf, sort)
 import Grid
 import Solver
+import System.Directory (listDirectory)
+import System.FilePath (takeBaseName, (</>))
 import Test.Tasty
 import Test.Tasty.HUnit
 
@@ -19,20 +22,36 @@ data Mission = Mission
   { missionId :: String,
     difficulty :: String,
     puzzle :: String,
-    expect :: String
+    expect :: String,
+    -- some sources publish the full solution; when present, every value
+    -- the solver places is checked against it (even on stuck puzzles)
+    solution :: Maybe String
   }
 
 instance FromJSON Mission where
   parseJSON = withObject "Mission" $ \o ->
-    Mission <$> o .: "id" <*> o .: "difficulty" <*> o .: "puzzle" <*> o .: "expect"
+    Mission
+      <$> o .: "id"
+      <*> o .: "difficulty"
+      <*> o .: "puzzle"
+      <*> o .: "expect"
+      <*> o .:? "solution"
+
+-- tests run with cwd = core/; the corpus lives at the repo root
+corpusDir :: FilePath
+corpusDir = "../corpus"
 
 corpusTests :: IO TestTree
 corpusTests = do
-  -- tests run with cwd = core/; the corpus lives at the repo root
-  decoded <- eitherDecode <$> B.readFile "../corpus/magazine.json"
+  files <- sort . filter (".json" `isSuffixOf`) <$> listDirectory corpusDir
+  testGroup "Corpus" <$> mapM fileTests files
+
+fileTests :: FilePath -> IO TestTree
+fileTests file = do
+  decoded <- eitherDecode <$> B.readFile (corpusDir </> file)
   pure $ case decoded of
-    Left err -> testCase "corpus parses" (assertFailure err)
-    Right missions -> testGroup "Corpus (magazine)" (map missionTest missions)
+    Left err -> testCase (file ++ " parses") (assertFailure err)
+    Right missions -> testGroup (takeBaseName file) (map missionTest missions)
 
 missionTest :: Mission -> TestTree
 missionTest m = testCase (missionId m ++ " (" ++ difficulty m ++ ") -> " ++ expect m) $ do
@@ -42,6 +61,11 @@ missionTest m = testCase (missionId m ++ " (" ++ difficulty m ++ ") -> " ++ expe
   isBoardCorrect classicBoard final @? "solver produced an invalid grid"
   null [() | PossibleValues cs <- final, IntSet.null cs]
     @? "contradiction: a cell lost all candidates"
+  case solution m of
+    Nothing -> pure ()
+    Just sol ->
+      and [show v == [c] | (CellValue v, c) <- zip final sol]
+        @? "a placed value disagrees with the known solution"
   show outcome @?= expectedOutcome
   where
     expectedOutcome = case expect m of

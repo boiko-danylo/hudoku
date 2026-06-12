@@ -52,3 +52,5 @@ tests:
       - HUnit
       - tasty
       - tasty-hunit
+      - directory
+      - filepath

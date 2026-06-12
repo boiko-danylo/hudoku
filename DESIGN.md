@@ -103,8 +103,10 @@ inside techniques.
 - `Main.hs` solves a hardcoded grid; reading from stdin/args still to do.
 - Description renderer for Findings (UI layer) not started.
 - `corpus/` is the live puzzle corpus + progress tracker (CorpusTest solves
-  every entry; expectations recorded per puzzle — flip "stuck" to "solved"
-  when new techniques land). Ingestion: `ocr/grid-ocr.py` (photo -> grids)
-  + `corpus/verify.hs` (transcription check). `core/test/Missions/` +
-  root `hard.json`/`getLevel.sh`: older dormant sudoku.com data, fold into
-  corpus/ someday.
+  every entry of every `corpus/*.json`; expectations recorded per puzzle —
+  flip "stuck" to "solved" when new techniques land; entries with a known
+  `solution` get every placed value cross-checked). Files: `magazine.json`
+  (photographed pages, ingestion: `ocr/grid-ocr.py` + `corpus/verify.hs`),
+  `sudoku-com.json` (2021 expert puzzles with solutions), `puzzle-bank.json`
+  (public-domain sample stratified across Sukaku-Explainer ratings —
+  difficulty-scale calibration).
